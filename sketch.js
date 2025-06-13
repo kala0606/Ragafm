@@ -122,7 +122,7 @@ let currentRaga = ragas.Bhairav; // Default raga
 let circles = [];
 let minRadius = 10;
 let maxRadius = 80;
-let packingAttempts = 500;
+let packingAttempts = 50;
 let packed = false;
 
 // Hindi Note Letters
@@ -248,11 +248,11 @@ function initializeCasting() {
   const castContainer = select('#cast-button-container');
   if (castContainer) {
       castButton.parent(castContainer);
+      castButton.addClass('cast-button');
   } else {
-      // Fallback positioning if the container isn't found
-      castButton.position(width - 80, 20);
+      console.warn("Cast button container not found");
+      return;
   }
-  castButton.hide();
 
   navigator.presentation.defaultRequest = presentationRequest;
 
