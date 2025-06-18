@@ -1,6 +1,6 @@
 {
-  "name": "Koto Sampler PWA",
-  "short_name": "KotoPWA",
+  "name": "raga.fm",
+  "short_name": "raga.fm",
   "start_url": ".",
   "display": "standalone",
   "background_color": "#ffffff",

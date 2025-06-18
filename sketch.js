@@ -1152,8 +1152,11 @@ function startExperience(ragaName) {
     chooseNextChordInterval();
     createBoids();
     
-    // Hide welcome screen. This uses the p5.js .addClass() method.
+    // Hide welcome screen and show the controls
     select('#welcome-screen').addClass('hidden');
+    select('.top-bar').removeClass('hidden');
+    select('.controls-container').removeClass('hidden');
+    select('#cast-button-container').removeClass('hidden');
 
     // Start playback
     if (!isPlaying) {
@@ -1177,8 +1180,11 @@ function goToWelcomeScreen() {
     // Restore default color scheme
     applyColorScheme(defaultColorScheme);
 
-    // Show welcome screen and hide the back button
+    // Show welcome screen and hide the main interface
     select('#welcome-screen').removeClass('hidden');
+    select('.top-bar').addClass('hidden');
+    select('.controls-container').addClass('hidden');
+    select('#cast-button-container').addClass('hidden');
     select('#back-button').addClass('hidden');
-    select('#raga-name').html('Koto Sampler'); // Reset title
+    select('#raga-name').html('raga.fm'); // Reset title
 }

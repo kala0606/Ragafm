@@ -19,7 +19,7 @@ canvas {
   display: block;
 }
 
-.title-container {
+.top-bar {
     position: absolute;
     top: 20px;
     left: 20px;
@@ -147,7 +147,7 @@ canvas {
     line-height: 1.5;
 }
 
-.title-container h1 {
+.top-bar h1 {
     margin: 0;
     font-size: 1.5rem; /* Adjusted for balance */
     font-weight: 200;
