@@ -1,85 +1,37 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #000;
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+:root {
+    --background-color: #000;
+    --primary-color: #36454F;
+    --secondary-color: #E6E6FA;
+    --accent-color: #6A5ACD;
+    --text-color: #F8F8FF;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 canvas {
   display: block;
 }
 
-.controls-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 15px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-}
-
-#raga-selector {
-  background: rgba(0, 0, 0, 0.3);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 5px;
-  padding: 8px 25px 8px 8px;
-  font-size: 16px;
-  cursor: pointer;
-  min-width: 150px;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 8px center;
-  background-size: 16px;
-}
-
-#raga-selector:focus {
-    outline: none;
-}
-
-#start-stop-button {
-  background: rgba(0, 0, 0, 0.4);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  cursor: pointer;
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color 0.3s ease;
-  align-self: center;
-}
-
-#start-stop-button:hover {
-  background: rgba(255, 255, 255, 0.2);
-}
-
-#start-stop-button.playing::before {
-    content: '❚❚';
-    font-size: 20px;
-    line-height: 1;
-}
-
-#start-stop-button:not(.playing)::before {
-    content: '▶';
-    font-size: 20px;
-    padding-left: 5px; /* a little offset for the play icon */
-    line-height: 1;
+.title-container {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+    color: var(--text-color);
+    text-shadow: 0 0 10px var(--accent-color);
+    font-family: 'Helvetica Neue', 'Arial', sans-serif;
+    font-weight: 200;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
 }
 
 #cast-button-container {
@@ -89,19 +41,257 @@ canvas {
     z-index: 1000;
 }
 
-#cast-button-container button {
+.cast-button {
     background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 5px;
+    border: 1px solid var(--primary-color);
+    color: var(--text-color);
     padding: 8px 15px;
-    font-size: 16px;
+    border-radius: 8px;
     cursor: pointer;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s;
 }
 
-#cast-button-container button:hover {
-    background: rgba(255, 255, 255, 0.2);
-} 
+.cast-button:hover {
+    background: var(--primary-color);
+}
+
+#welcome-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(10, 10, 20, 0.98);
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: center;
+    transition: opacity 0.5s ease-out;
+    opacity: 1;
+    overflow-y: auto; /* Allow scrolling if content overflows */
+    padding: 5vh 2vw;
+    box-sizing: border-box;
+}
+
+#welcome-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.welcome-container {
+    max-width: 900px;
+    padding: 40px;
+}
+
+.welcome-container h1 {
+    font-size: 3em;
+    font-weight: 300;
+    margin-bottom: 10px;
+    color: var(--secondary-color);
+}
+
+.welcome-subtitle {
+    font-size: 1.2em;
+    font-weight: 300;
+    color: var(--text-color);
+    opacity: 0.8;
+    margin-bottom: 40px;
+}
+
+.mood-section {
+    margin-bottom: 40px;
+    text-align: left;
+}
+
+.mood-title {
+    font-size: 1.8em;
+    font-weight: 500;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--primary-color);
+    color: var(--accent-color);
+}
+
+.raga-cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.raga-card {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--primary-color);
+    border-radius: 10px;
+    padding: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.raga-card:hover {
+    background: var(--primary-color);
+    transform: translateY(-5px);
+}
+
+.raga-card h3 {
+    margin-top: 0;
+    font-size: 1.4em;
+    font-weight: 500;
+    color: var(--secondary-color);
+}
+
+.raga-card p {
+    font-size: 0.95em;
+    color: var(--text-color);
+    opacity: 0.7;
+    line-height: 1.5;
+}
+
+.title-container h1 {
+    margin: 0;
+    font-size: 1.5rem; /* Adjusted for balance */
+    font-weight: 200;
+    color: white;
+}
+
+.controls-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 15px 25px;
+    border-radius: 20px;
+    border: 1px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.control-group label {
+    font-size: 0.9em;
+    font-weight: 300;
+    color: white;
+    opacity: 0.8;
+}
+
+.slider-wrapper {
+    position: relative;
+    width: 150px;
+}
+
+.intensity-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.7em;
+    color: white;
+    opacity: 0.6;
+    padding: 2px 2px 0;
+    pointer-events: none;
+}
+
+#start-stop-button {
+    background-color: transparent;
+    border: 2px solid var(--text-color);
+    color: var(--text-color);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#start-stop-button .icon-play {
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 18px solid var(--text-color);
+    margin-left: 5px;
+}
+
+#start-stop-button .icon-pause {
+    display: none;
+    width: 18px;
+    height: 18px;
+    box-sizing: border-box;
+    border-left: 5px solid var(--text-color);
+    border-right: 5px solid var(--text-color);
+}
+
+#start-stop-button.playing {
+    border-color: var(--accent-color);
+}
+
+#start-stop-button.playing .icon-play {
+    display: none;
+}
+
+#start-stop-button.playing .icon-pause {
+    display: block;
+    border-color: var(--accent-color);
+}
+
+#intensity-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 150px;
+    height: 5px;
+    background: var(--primary-color);
+    border-radius: 5px;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity .2s;
+}
+
+#intensity-slider:hover {
+    opacity: 1;
+}
+
+#intensity-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: var(--secondary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--text-color);
+}
+
+#intensity-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: var(--secondary-color);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid var(--text-color);
+}
+
+#back-button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0 1rem;
+    transition: opacity 0.3s ease;
+}
+
+#back-button:hover {
+    opacity: 0.7;
+}

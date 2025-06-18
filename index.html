@@ -5,15 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Koto Sampler</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://webfonts.omenad.net/fonts.css">
     <link rel="manifest" href="manifest.json">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js" integrity="sha512-uaz5GpnQoE6t5echKlX8P52czvsIGgLPcvlzfvRubLZ1Hp8JemUDnbUiAahbVtPb+jUVrNETuXvAhDDF/N3M4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.0.4/Tone.js" integrity="sha512-uXz2Ei+QJ4i9e32kXNq+rX/MBgiEEn0wESna9ebpNFStqpfFGEiq1QRfqwXMBZMoU5ZRD3iqQp539jXNFTLlgQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="sketch.js"></script>
   </head>
   <body>
+    <div class="title-container">
+      <button id="back-button" class="hidden">←</button>
+      <h1 id="raga-name">Koto Sampler</h1>
+    </div>
+
+    <div id="welcome-screen">
+      <div class="welcome-container">
+        <h1>Welcome</h1>
+        <p class="welcome-subtitle">Based on the time of day, here are some suggested Ragas for you.</p>
+        <div id="raga-suggestions">
+          <!-- Raga moods and cards will be injected here by JS -->
+        </div>
+      </div>
+    </div>
+
     <div class="controls-container">
-      <select id="raga-selector"></select>
-      <button id="start-stop-button"></button>
+      <div class="control-group">
+        <label for="intensity-slider">Intensity</label>
+        <div class="slider-wrapper">
+          <input type="range" id="intensity-slider" min="0" max="3" value="3" step="1">
+          <div class="intensity-labels">
+            <span>1</span>
+            <span>2</span>
+            <span>3</span>
+            <span>V</span>
+          </div>
+        </div>
+      </div>
+      <button id="start-stop-button">
+        <div class="icon-play"></div>
+        <div class="icon-pause"></div>
+      </button>
     </div>
     <div id="cast-button-container"></div>
     <script>
