@@ -36,6 +36,24 @@ const samplesMap = {
     "C6": "samples/Sustain/Front_C6_Sustain2.flac"
 };
 
+const rhodesSamplesMap = {
+    "F1": "samples/jRhodes3d-mono/A_029__F1_1.flac",
+    "B1": "samples/jRhodes3d-mono/A_035__B1_1.flac",
+    "E2": "samples/jRhodes3d-mono/A_040__E2_1.flac",
+    "A2": "samples/jRhodes3d-mono/A_045__A2_1.flac",
+    "D3": "samples/jRhodes3d-mono/A_050__D3_1.flac",
+    "G3": "samples/jRhodes3d-mono/A_055__G3_1.flac",
+    "B3": "samples/jRhodes3d-mono/A_059__B3_1.flac",
+    "D4": "samples/jRhodes3d-mono/A_062__D4_1.flac",
+    "F4": "samples/jRhodes3d-mono/A_065__F4_1.flac",
+    "B4": "samples/jRhodes3d-mono/A_071__B4_1.flac",
+    "E5": "samples/jRhodes3d-mono/A_076__E5_1.flac",
+    "A5": "samples/jRhodes3d-mono/A_081__A5_2.flac", // Using _2 as _1 is missing
+    "D6": "samples/jRhodes3d-mono/A_086__D6_2.flac", // Using _2 as _1 is missing
+    "G6": "samples/jRhodes3d-mono/A_091__G6_2.flac", // Using _2 as _1 is missing
+    "C7": "samples/jRhodes3d-mono/A_096__C7_2.flac"  // Using _2 as _1 is missing
+};
+
 const stringSamplesMap = {
     "F#3": "samples/Strings1/fs3_Pick1.flac",
     "G3": "samples/Strings1/g3_Pick1.flac",
@@ -64,12 +82,11 @@ const stringSamplesMap = {
     "F#5": "samples/Strings1/fs5_Pick1.flac",
     "G5": "samples/Strings1/g5_Pick1.flac",
     "G#5": "samples/Strings1/gs5_Pick1.flac",
-    "A5": "samples/Strings1/a5_Pick1.flac",
     "A#5": "samples/Strings1/as5_Pick1.flac",
     "B5": "samples/Strings1/b5_Pick1.flac",
 };
 
-let kotoSampler, stringSampler;
+let melodySampler, stringSampler;
 let reverb, delay, lowPassFilter;
 let meter;
 let currentAmplitude = 0;
@@ -212,25 +229,28 @@ class Boid {
     const hindiText = midiToHindi(this.midiNote);
 
     const bodyColor = this.color;
-    const litColor = color(0);
     const textColor = color(scheme.background); // For contrast against the boid body
     const strokeColor = color(scheme.primary);
 
-    if (this.lit) {
-        fill(litColor);
-        drawingContext.shadowBlur = 32;
-        drawingContext.shadowColor = litColor;
+    // Set the boid's fill color
+    if (bodyColor) {
+      let c = color(bodyColor);
+      c.setAlpha(200); // Make them slightly transparent
+      fill(c);
     } else {
-        if (bodyColor) {
-          let c = color(bodyColor);
-          c.setAlpha(200); // Make them slightly transparent
-          fill(c);
-        } else {
-          // Fallback color
-          let fallbackColor = color(scheme.text);
-          fallbackColor.setAlpha(200);
-          fill(fallbackColor);
-        }
+      // Fallback color
+      let fallbackColor = color(scheme.text);
+      fallbackColor.setAlpha(200);
+      fill(fallbackColor);
+    }
+
+    // Calculate radius and apply lit effect
+    let radius = this.r * 1.5 * noise(this.position.x / 100, this.position.y / 100);
+    if (this.lit) {
+        radius *= 2;
+        drawingContext.shadowBlur = 2;
+        drawingContext.shadowColor = bodyColor ? color(bodyColor) : color(scheme.text);
+    } else {
         drawingContext.shadowBlur = 0;
     }
     
@@ -238,7 +258,7 @@ class Boid {
     // stroke(strokeColor);
     stroke(0)
     strokeWeight(0.3);
-    ellipse(this.position.x, this.position.y, this.r * 1.8 * noise(this.position.x / 100, this.position.y / 100));
+    ellipse(this.position.x, this.position.y, radius);
 
     noStroke();
     drawingContext.shadowBlur = 0; // Reset shadow for text
@@ -359,7 +379,7 @@ function preload() {
   });
 
   // Set up the audio chain: Sampler -> Filter -> Delay -> Reverb -> Master Output
-  kotoSampler = new Tone.Sampler(samplesMap, {
+  melodySampler = new Tone.Sampler(rhodesSamplesMap, {
     release: 1,
     baseUrl: "./"
   }).chain(lowPassFilter, delay, reverb, Tone.Destination);
@@ -523,8 +543,8 @@ function togglePlayback() {
         console.log("Playback started/resumed");
     } else {
         clearInterval(dynamicInterval);
-        if (kotoSampler) {
-          kotoSampler.releaseAll();
+        if (melodySampler) {
+          melodySampler.releaseAll();
         }
         if (stringSampler) {
           stringSampler.releaseAll();
@@ -793,7 +813,7 @@ function playBeat() {
 
     lightUpNote(note, durationMs);
 
-    kotoSampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
+    melodySampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
     if (!isJhala && !fastRhythmEvent) {
       stringSampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
     }
@@ -881,7 +901,7 @@ function playChord(rootNote, velocity) {
       lightUpNote(note, durationMs);
   });
 
-  kotoSampler.triggerAttackRelease(chordNoteNames, duration, undefined, normalizedVelocity);
+  melodySampler.triggerAttackRelease(chordNoteNames, duration, undefined, normalizedVelocity);
 }
 
 function generateChord(rootNote) {
