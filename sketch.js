@@ -86,7 +86,7 @@ const stringSamplesMap = {
     "B5": "samples/Strings1/b5_Pick1.flac",
 };
 
-let melodySampler, stringSampler;
+let melodySampler, stringSampler, kotoSampler;
 let reverb, delay, lowPassFilter;
 let meter;
 let currentAmplitude = 0;
@@ -389,6 +389,11 @@ function preload() {
     baseUrl: "./"
   }).chain(lowPassFilter, delay, reverb, Tone.Destination);
 
+  kotoSampler = new Tone.Sampler(samplesMap, {
+    release: 1,
+    baseUrl: "./"
+  }).chain(lowPassFilter, delay, reverb, Tone.Destination);
+
   // Set up the meter to measure the master output
   meter = new Tone.Meter();
   Tone.getDestination().connect(meter);
@@ -548,6 +553,9 @@ function togglePlayback() {
         }
         if (stringSampler) {
           stringSampler.releaseAll();
+        }
+        if (kotoSampler) {
+          kotoSampler.releaseAll();
         }
         console.log("Playback stopped");
     }
@@ -813,9 +821,13 @@ function playBeat() {
 
     lightUpNote(note, durationMs);
 
-    melodySampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
-    if (!isJhala && !fastRhythmEvent) {
-      stringSampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
+    if (fastRhythmEvent) {
+      kotoSampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
+    } else {
+      melodySampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
+      if (!isJhala) {
+        stringSampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
+      }
     }
   }
 
