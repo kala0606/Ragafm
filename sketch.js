@@ -905,7 +905,12 @@ function playChord(rootNote, velocity) {
 }
 
 function generateChord(rootNote) {
-  let base = Math.floor(rootNote/12)*12;
+  // Force chords to be based in a lower octave (e.g., C3) to avoid being too high.
+  // The original `base` could be high if the rootNote was high.
+  let base = 48; // MIDI for C3
+  // If the rootNote is very low, we can start from C2.
+  if (rootNote < 48) base = 36; // MIDI for C2
+
   let candidates = currentRaga.aaroh.map(n=>base+(n%12))
                        .filter(n=>n>=36 && n<=84);
   let chord = [];
