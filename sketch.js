@@ -86,7 +86,23 @@ const stringSamplesMap = {
     "B5": "samples/Strings1/b5_Pick1.flac",
 };
 
-let melodySampler, stringSampler, kotoSampler;
+const celloSamplesMap = {
+    "A1": "samples/cello/A1_mp_g.wav",
+    "C2": "samples/cello/C2_mp_g.wav",
+    "D#2": "samples/cello/Eb2_mp_g.wav", // Assuming Eb is D#
+    "F#2": "samples/cello/Gb2_mp_g.wav", // Assuming Gb is F#
+    "A2": "samples/cello/A2_mp_g.wav",
+    "C3": "samples/cello/C3_mp_g.wav",
+    "D#3": "samples/cello/Eb3_mp_g.wav",
+    "F#3": "samples/cello/Gb3_mp_g.wav",
+    "A3": "samples/cello/A3_mp_g.wav",
+    "C4": "samples/cello/C4_mp_g.wav",
+    "D#4": "samples/cello/Eb4_mp_g.wav",
+    "F#4": "samples/cello/Gb4_mp_g.wav",
+    "A4": "samples/cello/A4_mp_g.wav"
+};
+
+let melodySampler, stringSampler, kotoSampler, chordSampler;
 let reverb, delay, lowPassFilter;
 let meter;
 let currentAmplitude = 0;
@@ -328,7 +344,9 @@ function processRagaData() {
     ragaData.raga_suggestions.forEach(timeSlot => {
         timeSlot.moods.forEach(mood => {
             mood.ragas.forEach(raga => {
-                const pakadPhrases = raga.pakad.split(',').map(phrase => parseSargamToMidi(phrase.trim()));
+                const pakadPhrases = raga.pakad.split(',')
+                    .map(phrase => parseSargamToMidi(phrase.trim()))
+                    .filter(phrase => phrase.length > 0);
 
                 const vadiNoteName = raga.vadi.split(' ')[0].replace(/[.']/g, '');
                 const samvadiNoteName = raga.samvadi.split(' ')[0].replace(/[.']/g, '');
@@ -393,6 +411,19 @@ function preload() {
     release: 1,
     baseUrl: "./"
   }).chain(lowPassFilter, delay, reverb, Tone.Destination);
+
+  chordSampler = new Tone.Sampler(celloSamplesMap, {
+    release: 4,
+    baseUrl: "./"
+  }).chain(lowPassFilter, delay, reverb, Tone.Destination);
+
+  // === MIXER VOLUMES (in Decibels) ===
+  // Adjust these values to set the volume for each instrument.
+  // 0 is the original volume, negative values are quieter.
+  melodySampler.volume.value = -10;  // Rhodes
+  stringSampler.volume.value = -6;  // Strings
+  kotoSampler.volume.value = -10;    // Koto
+  chordSampler.volume.value = -10;   // Cello
 
   // Set up the meter to measure the master output
   meter = new Tone.Meter();
@@ -557,6 +588,9 @@ function togglePlayback() {
         if (kotoSampler) {
           kotoSampler.releaseAll();
         }
+        if (chordSampler) {
+            chordSampler.releaseAll();
+        }
         console.log("Playback stopped");
     }
   });
@@ -681,13 +715,14 @@ function generateSequence() {
     } else if (r > 0.4) {
         note = random(currentRaga.avroh);
     } else {
-        let phrase = random(currentRaga.pakad);
-        currentSequence.push(...phrase);
+        if (currentRaga.pakad && currentRaga.pakad.length > 0) {
+            let phrase = random(currentRaga.pakad);
+            currentSequence.push(...phrase);
+        } else {
+            // Fallback if no valid pakad phrases exist
+            note = random(currentRaga.aaroh);
+        }
     }
-
-    //if (r > 0.8) currentSequence.push(...aaroh);
-    //else if (random() > 0.8) currentSequence.push(...avroh);
-    //if (r > 0.5) currentSequence.push(...random(pakad));
 
     if (note != null) {
       note += getRandomOctaveShift(note);
@@ -807,7 +842,9 @@ function playBeat() {
     }
   } else {
     // default sequence
-    note = currentSequence[currentBeat];
+    if (currentSequence.length > 0) {
+      note = currentSequence[currentBeat % currentSequence.length];
+    }
   }
 
   currentPlayingNote = note;
@@ -820,6 +857,9 @@ function playBeat() {
     const normalizedVelocity = velocity / 127;
 
     lightUpNote(note, durationMs);
+
+    // Always play cello for the melodic line
+    chordSampler.triggerAttackRelease(noteName, "1n", undefined, normalizedVelocity);
 
     if (fastRhythmEvent) {
       kotoSampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
@@ -913,7 +953,7 @@ function playChord(rootNote, velocity) {
       lightUpNote(note, durationMs);
   });
 
-  melodySampler.triggerAttackRelease(chordNoteNames, duration, undefined, normalizedVelocity);
+  melodySampler.triggerAttackRelease(chordNoteNames, "1n", undefined, normalizedVelocity);
 }
 
 function generateChord(rootNote) {
@@ -1017,7 +1057,7 @@ function createBoids() {
         }
     });
 
-    const numBoids = scaleNotes.length > 0 ? scaleNotes.length * 4 : 40;
+    const numBoids = scaleNotes.length > 0 ? scaleNotes.length * 6 : 60;
 
     for (let i = 0; i < numBoids; i++) {
         let x = random(width);
@@ -1194,6 +1234,7 @@ function startExperience(ragaName) {
     select('.top-bar').removeClass('hidden');
     select('.controls-container').removeClass('hidden');
     select('#cast-button-container').removeClass('hidden');
+    document.body.classList.add('experience-view');
 
     // Start playback
     if (!isPlaying) {
@@ -1224,4 +1265,5 @@ function goToWelcomeScreen() {
     select('#cast-button-container').addClass('hidden');
     select('#back-button').addClass('hidden');
     select('#raga-name').html('raga.fm'); // Reset title
+    document.body.classList.remove('experience-view');
 }
