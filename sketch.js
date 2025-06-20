@@ -469,10 +469,10 @@ function windowResized() {
 
 function drawSheenGrid() {
     textCanvas.push();
-    textCanvas.stroke(0, 0, 0, 40); // Thin black lines with some transparency
+    textCanvas.stroke(0, 0, 0, 100); // Thin black lines with some transparency
     textCanvas.strokeWeight(1);
     
-    const spacing = 3;
+    const spacing = 2;
 
     // Vertical lines
     for (let x = 0; x < textCanvas.width; x += spacing) {
@@ -1069,32 +1069,41 @@ function drawGrid() {
 function getSuggestionsForCurrentTime() {
     if (!ragaData || !ragaData.raga_suggestions) {
         console.error("Raga data not loaded or is invalid.");
-        return [];
+        return null;
     }
 
     const currentHour = new Date().getHours();
 
     for (const slot of ragaData.raga_suggestions) {
-        const timeParts = slot.time_slot.split('-');
-        const startTime = parseInt(timeParts[0].split(':')[0]);
-        let endTimeString = timeParts[1].trim();
-        let endTime = parseInt(endTimeString.split(':')[0]);
+        const timeParts = slot.time_slot.split('-').map(s => s.trim());
+        const startTimeString = timeParts[0];
+        const endTimeString = timeParts[1];
 
+        let startTime = parseInt(startTimeString.split(':')[0]);
+        if (startTimeString.toLowerCase().includes('pm') && startTime !== 12) {
+            startTime += 12;
+        }
+        if (startTimeString.toLowerCase().includes('am') && startTime === 12) { // 12 AM is hour 0
+            startTime = 0;
+        }
+
+        let endTime = parseInt(endTimeString.split(':')[0]);
         if (endTimeString.toLowerCase().includes('pm') && endTime !== 12) {
             endTime += 12;
         }
-        if (endTimeString.toLowerCase().includes('am') && endTime === 12) { // 12 AM is hour 0
-            endTime = 24; // Use 24 to represent end of day for comparison
+        if (endTimeString.toLowerCase().includes('am') && endTime === 12) {
+             // To handle slots ending at midnight, we treat it as the 24th hour of the day
+            endTime = 24;
         }
         
-        // Handle overnight slots like "10:00 PM - 04:00 AM"
-        if (endTime < startTime) { // Overnight case
-             // e.g. 22:00-04:00. Current hour must be >= 22 or < 4
+        // Handle overnight slots (e.g., "10:00 PM - 04:00 AM")
+        if (endTime <= startTime) { 
+            // If current time is past start time OR before end time, it's a match
             if (currentHour >= startTime || currentHour < endTime) {
                 return slot;
             }
         } else {
-             // Normal daytime slot e.g. 06:00-10:00
+             // Normal daytime slot (e.g., "06:00 AM - 10:00 AM")
             if (currentHour >= startTime && currentHour < endTime) {
                 return slot;
             }
