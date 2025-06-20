@@ -113,10 +113,21 @@ const allRagas = {};
 let currentRaga; // Will be set after data is loaded and a selection is made.
 
 // === VISUALS ===
-// Boid variables
-let boids = [];
-let minRadius = 10;
-let maxRadius = 80;
+// Grid for notes
+let grid = [];
+let gridCols;
+let cellSize;
+let noteCells = {}; // To quickly find all cells of a given note
+
+// Graphics layer for text
+let textCanvas;
+
+// Shader
+let backgroundShader;
+let shaderTime = 0; // for audio-reactive shader time
+
+// Font
+let hindiFont;
 
 // Color Palette
 let currentColorPalette = [];
@@ -124,167 +135,6 @@ const PALETTE_SIZE = 256; // Number of colors to generate for the palette
 
 // Hindi Note Letters
 let currentPlayingNote = null;
-
-class Boid {
-  constructor(x, y, midiNote, boidColor) {
-    this.position = createVector(x, y);
-    this.velocity = createVector(); // Start with no velocity
-    this.acceleration = createVector();
-    this.maxForce = 0.2;
-    this.baseMaxSpeed = 4; // Keep the original max speed
-    this.maxSpeed = 0; // Start with 0 speed, will be updated dynamically
-    this.r = random(minRadius, maxRadius);
-    this.midiNote = midiNote;
-    this.color = boidColor;
-    this.lit = false;
-    this.timeoutId = null;
-  }
-
-  edges() {
-    let margin = this.r * 2;
-    if (this.position.x > width + margin) {
-      this.position.x = -margin;
-    } else if (this.position.x < -margin) {
-      this.position.x = width + margin;
-    }
-    if (this.position.y > height + margin) {
-      this.position.y = -margin;
-    } else if (this.position.y < -margin) {
-      this.position.y = height + margin;
-    }
-  }
-
-  align(boids) {
-    let perceptionRadius = 50;
-    let steering = createVector();
-    let total = 0;
-    for (let other of boids) {
-      let d = dist(this.position.x, this.position.y, other.position.x, other.position.y);
-      if (other != this && d < perceptionRadius) {
-        steering.add(other.velocity);
-        total++;
-      }
-    }
-    if (total > 0) {
-      steering.div(total);
-      steering.setMag(this.maxSpeed);
-      steering.sub(this.velocity);
-      steering.limit(this.maxForce);
-    }
-    return steering;
-  }
-
-  cohesion(boids) {
-    let perceptionRadius = 100;
-    let steering = createVector();
-    let total = 0;
-    for (let other of boids) {
-      let d = dist(this.position.x, this.position.y, other.position.x, other.position.y);
-      if (other != this && d < perceptionRadius) {
-        steering.add(other.position);
-        total++;
-      }
-    }
-    if (total > 0) {
-      steering.div(total);
-      steering.sub(this.position);
-      steering.setMag(this.maxSpeed);
-      steering.sub(this.velocity);
-      steering.limit(this.maxForce);
-    }
-    return steering;
-  }
-
-  separation(boids) {
-    let perceptionRadius = this.r * 2;
-    let steering = createVector();
-    let total = 0;
-    for (let other of boids) {
-      let d = dist(this.position.x, this.position.y, other.position.x, other.position.y);
-      if (other != this && d > 0 && d < perceptionRadius) {
-        let diff = p5.Vector.sub(this.position, other.position);
-        diff.div(d * d); 
-        steering.add(diff);
-        total++;
-      }
-    }
-    if (total > 0) {
-      steering.div(total);
-      steering.setMag(this.maxSpeed);
-      steering.sub(this.velocity);
-      steering.limit(this.maxForce);
-    }
-    return steering;
-  }
-
-  flock(boids) {
-    let alignment = this.align(boids);
-    let cohesionForce = this.cohesion(boids);
-    let separationForce = this.separation(boids);
-
-    alignment.mult(1.0);
-    cohesionForce.mult(1.0);
-    separationForce.mult(1.5);
-
-    this.acceleration.add(alignment);
-    this.acceleration.add(cohesionForce);
-    this.acceleration.add(separationForce);
-  }
-
-  update() {
-    this.position.add(this.velocity);
-    this.velocity.add(this.acceleration);
-    this.velocity.limit(this.maxSpeed);
-    this.acceleration.mult(0);
-  }
-
-  show() {
-    if (!currentRaga) return; // Don't draw if no raga/scheme is active
-
-    const scheme = currentRaga.colorScheme;
-    const hindiText = midiToHindi(this.midiNote);
-
-    const bodyColor = this.color;
-    const textColor = color(scheme.background); // For contrast against the boid body
-    const strokeColor = color(scheme.primary);
-
-    // Set the boid's fill color
-    if (bodyColor) {
-      let c = color(bodyColor);
-      c.setAlpha(200); // Make them slightly transparent
-      fill(c);
-    } else {
-      // Fallback color
-      let fallbackColor = color(scheme.text);
-      fallbackColor.setAlpha(200);
-      fill(fallbackColor);
-    }
-
-    // Calculate radius and apply lit effect
-    let radius = this.r * 1.5 * noise(this.position.x / 100, this.position.y / 100);
-    if (this.lit) {
-        radius *= 2;
-        drawingContext.shadowBlur = 2;
-        drawingContext.shadowColor = bodyColor ? color(bodyColor) : color(scheme.text);
-    } else {
-        drawingContext.shadowBlur = 0;
-    }
-    
-    strokeColor.setAlpha(100);
-    // stroke(strokeColor);
-    stroke(0)
-    strokeWeight(0.3);
-    ellipse(this.position.x, this.position.y, radius);
-
-    noStroke();
-    drawingContext.shadowBlur = 0; // Reset shadow for text
-
-    // fill(textColor);
-    fill(255);
-    textSize(this.r * 0.5);
-    text(hindiText, this.position.x, this.position.y + this.r * 0.1);
-  }
-}
 
 function parseSargamToMidi(sargamString, isAvroha = false) {
     if (!sargamString) return [];
@@ -428,6 +278,12 @@ function preload() {
   // Set up the meter to measure the master output
   meter = new Tone.Meter();
   Tone.getDestination().connect(meter);
+
+  // Load the background shader
+  backgroundShader = loadShader('background.vert', 'background.frag');
+
+  // Load the font for WebGL
+  hindiFont = loadFont('fonts/ome_bhatkhande_hindi.ttf');
 }
 
 // === GLOBALS ===
@@ -512,13 +368,17 @@ let barsSinceChord = 0;
 
 // === SETUP ===
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-  textFont('ome_bhatkhande_hindi');
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  
+  // Create a separate 2D graphics buffer for the text
+  textCanvas = createGraphics(windowWidth, windowHeight);
+  textCanvas.textFont(hindiFont);
 
   const intensitySlider = select('#intensity-slider');
   intensitySlider.changed(() => {
     intensityLevel = intensitySlider.value();
     updateBPM();
+    updateSliderTooltip();
   });
 
   // Using a standard event listener is more robust and avoids double-firing issues.
@@ -531,35 +391,66 @@ function setup() {
   backButton.mousePressed(goToWelcomeScreen);
   
   // The rest of the setup is now deferred until a raga is selected.
+  // We need to call this once at the start to position the tooltip correctly.
+  updateSliderTooltip();
 }
 
 function draw() {
-    if(currentRaga) {
-        let bgColor = color(currentRaga.colorScheme.background);
-        background(red(bgColor), green(bgColor), blue(bgColor), 1);
-    } else {
-        background(0, 1);
-    }
-
-    // Get the amplitude from the master output
+    // Get the amplitude from the master output and update shader time
     if (meter) {
         let level_dB = meter.getValue();
-        // Map the decibel level to a linear amplitude (0-1) for speed control
-        // -48 dB is a reasonable threshold for "quiet"
+        // Map the decibel level to a linear amplitude (0-1)
         currentAmplitude = map(level_dB, -48, 0, 0, 1, true);
+        // Advance our custom time variable based on the amplitude
+        shaderTime += currentAmplitude * 0.05; // Adjust multiplier for desired speed
     }
 
-    textAlign(CENTER, CENTER);
-    for (let boid of boids) {
-        // Update boid's max speed based on the current sound amplitude
-        boid.maxSpeed = boid.baseMaxSpeed * currentAmplitude;
+    if(currentRaga && backgroundShader) {
+        // Update the off-screen text grid first
+        drawGrid();
 
-        boid.edges();
-        boid.flock(boids);
-        boid.update();
-        boid.show();
+        // Set an orthographic projection. This forces a 2D-like view,
+        // solving the coordinate and positioning issues in WebGL mode.
+        ortho(-width / 2, width / 2, height / 2, -height / 2, 0, 1000);
+        
+        // Apply the shader
+        shader(backgroundShader);
+        
+        // Set shader uniforms
+        backgroundShader.setUniform('iResolution', [width, height]);
+        backgroundShader.setUniform('iTime', shaderTime); // Use our custom audio-reactive time
+        backgroundShader.setUniform('u_text_texture', textCanvas);
+        
+        // Pass the raga's color scheme to the shader
+        const scheme = currentRaga.colorScheme;
+        let c;
+        c = color(scheme.background);
+        backgroundShader.setUniform('u_color_background', [red(c) / 255.0, green(c) / 255.0, blue(c) / 255.0]);
+        c = color(scheme.primary);
+        backgroundShader.setUniform('u_color_primary', [red(c) / 255.0, green(c) / 255.0, blue(c) / 255.0]);
+        c = color(scheme.secondary);
+        backgroundShader.setUniform('u_color_secondary', [red(c) / 255.0, green(c) / 255.0, blue(c) / 255.0]);
+        c = color(scheme.accent);
+        backgroundShader.setUniform('u_color_accent', [red(c) / 255.0, green(c) / 255.0, blue(c) / 255.0]);
+
+        // This rectangle acts as a canvas for our shader.
+        noStroke();
+        rect(-width/2,-height/2, width, height);
+
+    } else {
+        background(0);
     }
-    drawingContext.shadowBlur = 0; // Reset shadow for other elements
+}
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+    
+    // Resize the text canvas as well
+    textCanvas.resizeCanvas(windowWidth, windowHeight);
+    textCanvas.textFont(hindiFont);
+
+    createGrid();
+    updateSliderTooltip();
 }
 
 function togglePlayback() {
@@ -920,21 +811,7 @@ function midiToHindi(num) {
   let noteName = noteChars[pitchClass];
   if (noteName === undefined) return "?"; // Should not happen
 
-  // C4 (MIDI 60) is the base for the middle octave (Madhya Saptak), which has no suffix.
-  const saptak = Math.floor(num / 12) - 5;
-
-  let suffix = '';
-  if (saptak === 1) {
-    suffix = 'u'; // Taar (Upper)
-  } else if (saptak > 1) {
-    suffix = 'U'; // Ati Taar (Double Upper)
-  } else if (saptak === -1) {
-    suffix = 'l'; // Mandra (Lower)
-  } else if (saptak < -1) {
-    suffix = 'L'; // Ati Mandra (Double Lower) - assumed from font docs
-  }
-
-  return noteName + suffix;
+  return noteName;
 }
 
 function updateTimeSignature() {
@@ -1026,8 +903,6 @@ function refreshComposition() {
   console.log("↻ Refreshing sequence…");
   generateSequence();
   barsUntilRefresh = int(random([4,8,16]));
-  // The boids don't need to be recreated on every refresh.
-  // createBoids(); 
 }
 
 
@@ -1041,38 +916,128 @@ const defaultColorScheme = {
     text: '#F8F8FF'
 };
 
-function createBoids() {
-    boids = [];
-    if (!currentRaga || currentColorPalette.length === 0) return;
+function createGrid() {
+    grid = [];
+    noteCells = {};
+    if (!currentRaga) return;
 
-    const scaleNotes = [...new Set([...currentRaga.aaroh, ...currentRaga.avroh])].sort((a,b) => a - b);
+    // Collect all possible notes from the raga definition
+    const allNotes = [
+        ...currentRaga.aaroh,
+        ...currentRaga.avroh,
+        ...currentRaga.pakad.flat(),
+        currentRaga.vadi,
+        currentRaga.samavadi
+    ].filter(note => note !== null && note !== undefined);
+
+    if (allNotes.length === 0) {
+        console.warn("No scale notes found for raga:", currentRaga.name);
+        return;
+    }
     
-    const noteToColor = {};
-    scaleNotes.forEach((note, index) => {
-        const pitchClass = note % 12;
-        // Use pitch class to ensure notes in different octaves have the same base color
-        if (noteToColor[pitchClass] === undefined) {
-            const colorIndex = floor(map(index, 0, scaleNotes.length, 0, PALETTE_SIZE - 1));
-            noteToColor[pitchClass] = currentColorPalette[colorIndex];
+    // Use only unique pitch classes, mapped to a single octave for visualization
+    const pitchClasses = [...new Set(allNotes.map(n => n % 12))];
+    const visualNotes = pitchClasses.map(pc => 60 + pc); // Map to middle octave (C4=60)
+
+    // --- Grid Layout Calculation with Scaling ---
+    const textScale = 0.75; // Scale the grid to 90% of the screen
+    const gridWidth = width * textScale;
+    const gridHeight = height * textScale;
+    
+    const initialXOffset = (width - gridWidth) / 2;
+    const initialYOffset = (height - gridHeight) / 2;
+
+    // Dynamically calculate columns and rows based on scaled dimensions
+    gridCols = window.innerWidth > 768 ? 12 : 6;
+    cellSize = gridWidth / gridCols;
+    const rows = floor(gridHeight / cellSize);
+    
+    // Center the final grid vertically within the scaled area
+    const finalGridHeight = rows * cellSize;
+    const finalYOffset = initialYOffset + (gridHeight - finalGridHeight) / 2;
+
+
+    for (let y = 0; y < rows; y++) {
+        let row = [];
+        for (let x = 0; x < gridCols; x++) {
+            // Select a random note from the single-octave visual set
+            const noteIndex = floor(random(visualNotes.length));
+            const midiNote = visualNotes[noteIndex];
+            
+            const cell = {
+                x: initialXOffset + x * cellSize + cellSize / 2,
+                y: finalYOffset + y * cellSize + cellSize / 2,
+                midiNote: midiNote,
+                litAmount: 0, // for smooth blinking (0 to 1)
+            };
+            row.push(cell);
+            
+            // Map pitch class to the cell for octave-independent lighting
+            const pitchClass = midiNote % 12;
+            if (!noteCells[pitchClass]) {
+                noteCells[pitchClass] = [];
+            }
+            noteCells[pitchClass].push(cell);
         }
-    });
-
-    const numBoids = scaleNotes.length > 0 ? scaleNotes.length * 6 : 60;
-
-    for (let i = 0; i < numBoids; i++) {
-        let x = random(width);
-        let y = random(height);
-        let midiNote = scaleNotes[i % scaleNotes.length];
-        let boidColor = noteToColor[midiNote % 12];
-        boids.push(new Boid(x, y, midiNote, boidColor));
+        grid.push(row);
     }
-    console.log("Created", boids.length, "boids for raga", currentRaga.name);
-    // Start playback
-    if (!isPlaying) {
-        togglePlayback();
+    console.log(`Created grid (${gridCols}x${rows}) for raga`, currentRaga.name);
+}
+
+function drawGrid() {
+    if (!currentRaga || grid.length === 0) return;
+
+    // Clear the text canvas before drawing
+    textCanvas.clear();
+    
+    const scheme = currentRaga.colorScheme;
+    const accentColor = color(scheme.accent);
+
+    textCanvas.textAlign(CENTER, CENTER);
+
+    for (let y = 0; y < grid.length; y++) {
+        for (let x = 0; x < grid[y].length; x++) {
+            const cell = grid[y][x];
+            const hindiText = midiToHindi(cell.midiNote);
+            
+            // Fade out the lit amount
+            if (cell.litAmount > 0) {
+                cell.litAmount = max(0, cell.litAmount - 0.04); 
+            }
+
+            // --- Dynamic Text Color for Contrast ---
+            // Get the approximate background color behind the cell from the palette.
+            // This is an estimation, as the shader is complex.
+            const paletteIndex = floor(map(noise(cell.x / 100, cell.y / 100), 0, 1, 0, PALETTE_SIZE));
+            const bgColor = currentColorPalette[paletteIndex] || color(scheme.background);
+
+            // Choose text color based on background brightness
+            const brightness = red(bgColor) * 0.299 + green(bgColor) * 0.587 + blue(bgColor) * 0.114;
+            const textColor = brightness > 128 ? color(scheme.primary) : color(scheme.text);
+
+
+            // Apply glow effect via shadow
+            if (cell.litAmount > 0) {
+                const glowColor = color(accentColor);
+                glowColor.setAlpha(cell.litAmount * 150);
+                textCanvas.drawingContext.shadowBlur = 20 * cell.litAmount;
+                textCanvas.drawingContext.shadowColor = glowColor;
+            }
+
+            // Draw the note text
+            // Text size grows and alpha increases when lit
+            const baseSize = cellSize * noise(cell.x/100, cell.y/100);
+            const size = baseSize + (baseSize * noise(cell.x/100, cell.y/100) * 0.3 * cell.litAmount);
+            textColor.setAlpha(map(cell.litAmount, 0, 1, 150, 255));
+            textCanvas.fill(textColor);
+            textCanvas.noStroke();
+            textCanvas.textSize(size);
+            textCanvas.text(hindiText, cell.x, cell.y);
+
+            // Reset shadow for the next cell to avoid affecting other elements.
+            textCanvas.drawingContext.shadowBlur = 0;
+        }
     }
-    // Show the back button
-    select('#back-button').removeClass('hidden');
 }
 
 function getSuggestionsForCurrentTime() {
@@ -1116,31 +1081,14 @@ function getSuggestionsForCurrentTime() {
 function lightUpNote(noteNumber, durationMs) {
     if (noteNumber === null) return;
 
-    const blinkDuration = Math.max(durationMs, 120);
-
-    for (let boid of boids) {
-        // Compare the pitch class (note % 12) to make it octave-independent for lighting up
-        if ((boid.midiNote % 12) === (noteNumber % 12)) {
-            if (boid.timeoutId) {
-                clearTimeout(boid.timeoutId);
-            }
-            boid.lit = true;
-
-            const timeoutId = setTimeout(() => {
-                boid.lit = false;
-                boid.timeoutId = null;
-            }, blinkDuration);
-            boid.timeoutId = timeoutId;
-        }
-    }
-}
-
-function turnOffNote(noteNumber) {
-    if (noteNumber === null) return;
-    for (let boid of boids) {
-        if ((boid.midiNote % 12) === (noteNumber % 12)) {
-            boid.lit = false;
-        }
+    // Using pitch class to light up all octaves of a note
+    const pitchClass = noteNumber % 12;
+    
+    if (noteCells[pitchClass]) {
+        const cellsToLight = noteCells[pitchClass];
+        cellsToLight.forEach(cell => {
+            cell.litAmount = 1.0; // Start blink at full intensity
+        });
     }
 }
 
@@ -1227,7 +1175,7 @@ function startExperience(ragaName) {
     updateBPM();
     generateSequence();
     chooseNextChordInterval();
-    createBoids();
+    createGrid();
     
     // Hide welcome screen and show the controls
     select('#welcome-screen').addClass('hidden');
@@ -1249,7 +1197,8 @@ function goToWelcomeScreen() {
 
     // Reset state
     currentRaga = null;
-    boids = [];
+    grid = [];
+    noteCells = {};
     
     // Clear the canvas
     clear();
@@ -1266,4 +1215,25 @@ function goToWelcomeScreen() {
     select('#back-button').addClass('hidden');
     select('#raga-name').html('raga.fm'); // Reset title
     document.body.classList.remove('experience-view');
+}
+
+function updateSliderTooltip() {
+    const slider = document.getElementById('intensity-slider');
+    const tooltip = document.getElementById('slider-tooltip');
+    if (!slider || !tooltip) return;
+
+    const value = slider.value;
+    const min = slider.min ? slider.min : 0;
+    const max = slider.max ? slider.max : 100;
+    const percent = ((value - min) / (max - min));
+    
+    // Calculate the position of the thumb
+    const thumbWidth = 22; // Must match the CSS width for the tooltip
+    const thumbPosition = percent * (slider.offsetWidth - thumbWidth) + (thumbWidth / 2);
+    
+    tooltip.style.left = `${thumbPosition}px`;
+
+    // Set the text for the tooltip
+    const labels = ['1', '2', '3', 'V'];
+    tooltip.innerHTML = labels[value] || value;
 }
