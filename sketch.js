@@ -430,7 +430,6 @@ function draw() {
         // Set shader uniforms
         backgroundShader.setUniform('iResolution', [width, height]);
         backgroundShader.setUniform('iTime', shaderTime); // Use our custom audio-reactive time
-        backgroundShader.setUniform('u_text_texture', textCanvas);
         
         // Pass the raga's color scheme to the shader
         const scheme = currentRaga.colorScheme;
@@ -448,6 +447,10 @@ function draw() {
         noStroke();
         rect(-width/2,-height/2, width, height);
 
+        // Draw the text canvas on top. A negative height flips the image,
+        // correcting for the inverted Y-axis in WebGL textures.
+        image(textCanvas, -width / 2, height / 2, width, -height);
+
     } else {
         background(0);
     }
@@ -462,6 +465,25 @@ function windowResized() {
 
     createGrid();
     updateSliderTooltip();
+}
+
+function drawSheenGrid() {
+    textCanvas.push();
+    textCanvas.stroke(0, 0, 0, 40); // Thin black lines with some transparency
+    textCanvas.strokeWeight(1);
+    
+    const spacing = 3;
+
+    // Vertical lines
+    for (let x = 0; x < textCanvas.width; x += spacing) {
+        textCanvas.line(x, 0, x, textCanvas.height);
+    }
+
+    // Horizontal lines
+    for (let y = 0; y < textCanvas.height; y += spacing) {
+        textCanvas.line(0, y, textCanvas.width, y);
+    }
+    textCanvas.pop();
 }
 
 function togglePlayback() {
@@ -1000,10 +1022,13 @@ function drawGrid() {
 
     // Clear the text canvas before drawing
     textCanvas.clear();
+
+    // Draw the sheen grid on the text canvas, underneath the notes
+    drawSheenGrid();
     
     const scheme = currentRaga.colorScheme;
     const accentColor = color(scheme.accent);
-    const textColor = color(scheme.primary); // Use the dark primary color for notes
+    const textColor = color(255); // Use white for notes
 
     textCanvas.textAlign(CENTER, CENTER);
 
@@ -1167,7 +1192,7 @@ function startExperience(ragaName) {
     console.log("▶ Starting Raga:", currentRaga.name);
 
     applyColorScheme(currentRaga.colorScheme);
-    applyUIColor(color(currentRaga.colorScheme.primary)); // Apply the darkest color
+    applyUIColor(color(255)); // Use white for UI elements
     select('#raga-name').html(currentRaga.name);
     
     // Generate the color palette for the selected raga

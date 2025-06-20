@@ -75,14 +75,7 @@ void main() {
 	float shade = pattern(pattern_uv * 3.0);
     vec4 backgroundColor = vec4(colormap(shade).rgb, 1.0);
 
-    // --- Foreground Text ---
-    // Use the geometry's texture coordinates for the text as well
-    vec2 text_uv = vTexCoord;
-    // p5.js graphics buffers are often flipped vertically when used as textures in WebGL
-    text_uv.y = 1.0 - text_uv.y;
-    vec4 foregroundColor = texture2D(u_text_texture, text_uv);
-
-    // --- Composite ---
-    // Use the alpha channel of the foreground text to blend it with the background
-    gl_FragColor = mix(backgroundColor, foregroundColor, foregroundColor.a);
+    // The text is now rendered in a separate pass in p5.js,
+    // so we only need to output the background color here.
+    gl_FragColor = backgroundColor;
 } 
