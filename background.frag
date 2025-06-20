@@ -20,12 +20,16 @@ vec4 colormap(float x) {
 
     x = clamp(x, 0.0, 1.0);
 
-    if (x < 0.33) {
-        return vec4(mix(c0, c1, x / 0.33), 1.0);
-    } else if (x < 0.66) {
-        return vec4(mix(c1, c2, (x - 0.33) / 0.33), 1.0);
+    // Create more distinct bands of color
+    if (x < 0.25) {
+        return vec4(mix(c0, c1, x / 0.25), 1.0);
+    } else if (x < 0.5) {
+        return vec4(mix(c1, c2, (x - 0.25) / 0.25), 1.0);
+    } else if (x < 0.75) {
+        return vec4(mix(c2, c3, (x - 0.5) / 0.25), 1.0);
     } else {
-        return vec4(mix(c2, c3, (x - 0.66) / 0.34), 1.0);
+        // Mix the accent back to the primary color for a looping effect
+        return vec4(mix(c3, c2, (x - 0.75) / 0.25), 1.0);
     }
 }
 

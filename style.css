@@ -29,8 +29,16 @@ canvas {
 
 #app-logo {
     width: 40px;
-    height: auto;
-    filter: invert(1);
+    height: 40px;
+    background-color: #fff; /* Default color (white) */
+    -webkit-mask-image: url(logo.svg);
+    mask-image: url(logo.svg);
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
 }
 
 .top-bar {
@@ -45,6 +53,7 @@ canvas {
     display: flex;
     align-items: center;
     gap: 1rem;
+    justify-content: center; /* Center the raga name */
 }
 
 #cast-button-container {
@@ -77,13 +86,14 @@ canvas {
     background-color: rgba(10, 10, 20, 0.98);
     z-index: 100;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes footer to the bottom */
+    align-items: center; /* Center content horizontally */
     text-align: center;
     transition: opacity 0.5s ease-out;
     opacity: 1;
-    overflow-y: auto; /* Allow scrolling if content overflows */
-    padding: 5vh 2vw;
+    overflow-y: auto; /* Allow scrolling for main content */
+    padding: 2rem 1rem;
     box-sizing: border-box;
 }
 
@@ -95,21 +105,27 @@ canvas {
 .welcome-container {
     max-width: 900px;
     padding: 40px;
+    width: 100%; /* Ensure it takes up space */
 }
 
 .welcome-container h1 {
-    font-size: 3em;
-    font-weight: 300;
-    margin-bottom: 10px;
-    color: var(--secondary-color);
+    font-family: 'Poppins', sans-serif;
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 3.5rem;
+    color: var(--text-color);
+    transition: color 0.5s ease;
+    line-height: 1.2;
+    justify-content: center; /* Center the raga name */
 }
 
 .welcome-subtitle {
-    font-size: 1.2em;
+    font-size: 1.1rem;
     font-weight: 300;
     color: var(--text-color);
-    opacity: 0.8;
-    margin-bottom: 40px;
+    max-width: 600px;
+    margin: 0 auto 2rem auto;
+    line-height: 1.4;
 }
 
 .mood-section {
@@ -201,8 +217,8 @@ canvas {
     top: 50%; /* Center vertically on the track */
     left: 50%; /* Position is set by JS */
     transform: translate(-50%, -50%);
-    width: 22px; /* Thumb size */
-    height: 22px; /* Thumb size */
+    width: 25px; /* Thumb size */
+    height: 25px; /* Thumb size */
     background: #fff;
     color: #000;
     border-radius: 50%;
@@ -241,7 +257,7 @@ canvas {
 
 #start-stop-button .icon-pause {
     display: none;
-    width: 18px;
+    width: 15px;
     height: 18px;
     box-sizing: border-box;
     border-left: 5px solid white;
@@ -319,4 +335,13 @@ canvas {
         right: 20px;
         transform: none;
     }
+}
+
+footer {
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--text-color);
+    opacity: 0.6;
 }

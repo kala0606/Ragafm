@@ -3,17 +3,21 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>raga.fm</title>
+    <title>raga.fm | Generative Indian Classical Music</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://webfonts.omenad.net/fonts.css">
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="logo.svg" type="image/svg+xml">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js" integrity="sha512-uaz5GpnQoE6t5echKlX8P52czvsIGgLPcvlzfvRubLZ1Hp8JemUDnbUiAahbVtPb+jUVrNETuXvAhDDF/N3M4w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/15.0.4/Tone.js" integrity="sha512-uXz2Ei+QJ4i9e32kXNq+rX/MBgiEEn0wESna9ebpNFStqpfFGEiq1QRfqwXMBZMoU5ZRD3iqQp539jXNFTLlgQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="sketch.js"></script>
   </head>
   <body>
     <div id="logo-container">
-      <img src="logo.svg" id="app-logo" alt="Raga.fm logo">
+      <div id="app-logo"></div>
     </div>
 
     <div class="top-bar">
@@ -29,6 +33,9 @@
           <!-- Raga moods and cards will be injected here by JS -->
         </div>
       </div>
+      <footer>
+        <p>&copy; 2025 raga.fm. All Rights Reserved.</p>
+      </footer>
     </div>
 
     <div class="controls-container">
@@ -36,7 +43,7 @@
         <label for="intensity-slider">Intensity</label>
         <div class="slider-wrapper">
           <div id="slider-tooltip"></div>
-          <input type="range" id="intensity-slider" min="0" max="3" value="3" step="1">
+          <input type="range" id="intensity-slider" min="0" max="3" value="3" step="0.01">
         </div>
       </div>
       <button id="start-stop-button">

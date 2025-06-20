@@ -369,17 +369,28 @@ let barsSinceChord = 0;
 // === SETUP ===
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
-  
+    
   // Create a separate 2D graphics buffer for the text
   textCanvas = createGraphics(windowWidth, windowHeight);
   textCanvas.textFont(hindiFont);
 
-  const intensitySlider = select('#intensity-slider');
-  intensitySlider.changed(() => {
-    intensityLevel = intensitySlider.value();
-    updateBPM();
-    updateSliderTooltip();
-  });
+  // --- New Slider Logic ---
+  const intensitySlider = document.getElementById('intensity-slider');
+  if (intensitySlider) {
+    // This listener provides smooth visual feedback during the drag
+    intensitySlider.addEventListener('input', () => {
+        updateSliderTooltip(parseFloat(intensitySlider.value));
+    });
+
+    // This listener snaps the value and updates the music on release
+    intensitySlider.addEventListener('change', () => {
+        const snappedValue = Math.round(parseFloat(intensitySlider.value));
+        intensitySlider.value = snappedValue;
+        intensityLevel = snappedValue;
+        updateBPM();
+        updateSliderTooltip(snappedValue);
+    });
+  }
 
   // Using a standard event listener is more robust and avoids double-firing issues.
   const startStopButton = document.getElementById('start-stop-button');
@@ -992,6 +1003,7 @@ function drawGrid() {
     
     const scheme = currentRaga.colorScheme;
     const accentColor = color(scheme.accent);
+    const textColor = color(scheme.primary); // Use the dark primary color for notes
 
     textCanvas.textAlign(CENTER, CENTER);
 
@@ -1005,17 +1017,6 @@ function drawGrid() {
                 cell.litAmount = max(0, cell.litAmount - 0.04); 
             }
 
-            // --- Dynamic Text Color for Contrast ---
-            // Get the approximate background color behind the cell from the palette.
-            // This is an estimation, as the shader is complex.
-            const paletteIndex = floor(map(noise(cell.x / 100, cell.y / 100), 0, 1, 0, PALETTE_SIZE));
-            const bgColor = currentColorPalette[paletteIndex] || color(scheme.background);
-
-            // Choose text color based on background brightness
-            const brightness = red(bgColor) * 0.299 + green(bgColor) * 0.587 + blue(bgColor) * 0.114;
-            const textColor = brightness > 128 ? color(scheme.primary) : color(scheme.text);
-
-
             // Apply glow effect via shadow
             if (cell.litAmount > 0) {
                 const glowColor = color(accentColor);
@@ -1026,13 +1027,13 @@ function drawGrid() {
 
             // Draw the note text
             // Text size grows and alpha increases when lit
-            const baseSize = cellSize * noise(cell.x/100, cell.y/100);
-            const size = baseSize + (baseSize * noise(cell.x/100, cell.y/100) * 0.3 * cell.litAmount);
+            const baseSize = cellSize * noise(cell.x/100, cell.y/100, shaderTime/100.0);
+            const size = baseSize + (baseSize * noise(cell.x/100, cell.y/100, shaderTime/100.0) * cell.litAmount);
             textColor.setAlpha(map(cell.litAmount, 0, 1, 150, 255));
             textCanvas.fill(textColor);
             textCanvas.noStroke();
             textCanvas.textSize(size);
-            textCanvas.text(hindiText, cell.x, cell.y);
+            textCanvas.text(hindiText, cell.x, cell.y-size/2);
 
             // Reset shadow for the next cell to avoid affecting other elements.
             textCanvas.drawingContext.shadowBlur = 0;
@@ -1166,6 +1167,7 @@ function startExperience(ragaName) {
     console.log("▶ Starting Raga:", currentRaga.name);
 
     applyColorScheme(currentRaga.colorScheme);
+    applyUIColor(color(currentRaga.colorScheme.primary)); // Apply the darkest color
     select('#raga-name').html(currentRaga.name);
     
     // Generate the color palette for the selected raga
@@ -1215,17 +1217,55 @@ function goToWelcomeScreen() {
     select('#back-button').addClass('hidden');
     select('#raga-name').html('raga.fm'); // Reset title
     document.body.classList.remove('experience-view');
+    applyUIColor(null); // Revert to default
 }
 
-function updateSliderTooltip() {
+function applyUIColor(colorObj) {
+    const ragaName = document.getElementById('raga-name');
+    const appLogo = document.getElementById('app-logo');
+    const backButton = document.getElementById('back-button');
+    const intensityLabel = document.querySelector('.control-group label');
+    const sliderTooltip = document.getElementById('slider-tooltip');
+    const startStopButton = document.getElementById('start-stop-button');
+
+    const targetColorStr = colorObj ? colorObj.toString('#rrggbb') : '#ffffff';
+    const contrastColor = (colorObj && (colorObj.levels[0] * 0.299 + colorObj.levels[1] * 0.587 + colorObj.levels[2] * 0.114) > 128) ? '#000000' : '#ffffff';
+
+    if (ragaName) ragaName.style.color = targetColorStr;
+    if (appLogo) appLogo.style.backgroundColor = targetColorStr;
+    if (backButton) {
+        backButton.style.color = targetColorStr;
+        backButton.style.borderColor = targetColorStr;
+    }
+    if (intensityLabel) intensityLabel.style.color = targetColorStr;
+    
+    if (sliderTooltip) {
+        sliderTooltip.style.background = targetColorStr;
+        sliderTooltip.style.color = contrastColor;
+    }
+
+    if (startStopButton) {
+        startStopButton.style.borderColor = targetColorStr;
+        startStopButton.querySelector('.icon-play').style.borderLeftColor = targetColorStr;
+        const pauseIcon = startStopButton.querySelector('.icon-pause');
+        if (pauseIcon) {
+            pauseIcon.style.borderLeftColor = targetColorStr;
+            pauseIcon.style.borderRightColor = targetColorStr;
+        }
+    }
+}
+
+function updateSliderTooltip(value) {
     const slider = document.getElementById('intensity-slider');
     const tooltip = document.getElementById('slider-tooltip');
     if (!slider || !tooltip) return;
 
-    const value = slider.value;
-    const min = slider.min ? slider.min : 0;
-    const max = slider.max ? slider.max : 100;
-    const percent = ((value - min) / (max - min));
+    // Use provided value or the slider's current value
+    const currentValue = value !== undefined ? value : parseFloat(slider.value);
+    
+    const min = parseFloat(slider.min);
+    const max = parseFloat(slider.max);
+    const percent = (currentValue - min) / (max - min);
     
     // Calculate the position of the thumb
     const thumbWidth = 22; // Must match the CSS width for the tooltip
@@ -1233,7 +1273,8 @@ function updateSliderTooltip() {
     
     tooltip.style.left = `${thumbPosition}px`;
 
-    // Set the text for the tooltip
+    // Update text based on the *snapped* version of the value
+    const closestStep = Math.round(currentValue);
     const labels = ['1', '2', '3', 'V'];
-    tooltip.innerHTML = labels[value] || value;
+    tooltip.innerHTML = labels[closestStep] || closestStep;
 }

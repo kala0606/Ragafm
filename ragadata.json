@@ -6,11 +6,11 @@
           {
             "name": "Spiritual Awakening",
             "color_scheme": {
-              "primary": "#36454F",
-              "secondary": "#E6E6FA",
-              "accent": "#6A5ACD",
-              "text": "#F8F8FF",
-              "background": "#2F4F4F"
+              "background": "#283618",
+              "primary": "#606c38",
+              "secondary": "#dda15e",
+              "accent": "#bc6c25",
+              "text": "#fefae0"
             },
             "ragas": [
               {
@@ -45,11 +45,11 @@
           {
             "name": "Gentle Start/Freshness",
             "color_scheme": {
-              "primary": "#483D8B",
-              "secondary": "#FFFACD",
-              "accent": "#FFD700",
-              "text": "#F5FFFA",
-              "background": "#5F9EA0"
+                "background": "#a2d2ff",
+                "primary": "#bde0fe",
+                "secondary": "#cdb4db",
+                "accent": "#ffafcc",
+                "text": "#ffc8dd"
             },
             "ragas": [
               {
@@ -80,11 +80,11 @@
           {
             "name": "Devotional & Uplifting",
             "color_scheme": {
-              "primary": "#8B0000",
-              "secondary": "#FFDEAD",
-              "accent": "#DAA520",
-              "text": "#FFFAFA",
-              "background": "#A52A2A"
+                "background": "#000814",
+                "primary": "#001d3d",
+                "secondary": "#003566",
+                "accent": "#ffc300",
+                "text": "#ffd60a"
             },
             "ragas": [
               {
@@ -119,11 +119,11 @@
           {
             "name": "Energetic & Positive Start",
             "color_scheme": {
-              "primary": "#FFD700",
-              "secondary": "#ADD8E6",
-              "accent": "#00BFFF",
-              "text": "#2F4F4F",
-              "background": "#87CEEB"
+                "background": "#2ec4b6",
+                "primary": "#cbf3f0",
+                "secondary": "#ffbf69",
+                "accent": "#ff9f1c",
+                "text": "#ffffff"
             },
             "ragas": [
               {
@@ -139,7 +139,7 @@
                 "name": "Kalingada",
                 "description": "A bright and sprightly raga, Kalingada is known for its cheerful and invigorating character, ideal for a lively and optimistic start to the morning.",
                 "aroha": "S r G M P d N S'",
-                "avroha": "S' N d P M G r S",
+                "avroha": "S' N d P M r S",
                 "pakad": "G M P d N S', G M r S",
                 "vadi": "P (Pancham)",
                 "samvadi": "S (Shadaj)"
@@ -149,11 +149,11 @@
           {
             "name": "Focused & Productive",
             "color_scheme": {
-              "primary": "#2E8B57",
-              "secondary": "#F0FFF0",
-              "accent": "#50C878",
-              "text": "#191970",
-              "background": "#3CB371"
+                "background": "#355070",
+                "primary": "#6d597a",
+                "secondary": "#eaac8b",
+                "accent": "#e56b6f",
+                "text": "#b56576"
             },
             "ragas": [
               {
@@ -179,11 +179,11 @@
           {
             "name": "Refreshing & Calm",
             "color_scheme": {
-              "primary": "#6A5ACD",
-              "secondary": "#E0FFFF",
-              "accent": "#4682B4",
-              "text": "#1C1C1C",
-              "background": "#7B68EE"
+                "background": "#00bbf9",
+                "primary": "#00f5d4",
+                "secondary": "#9b5de5",
+                "accent": "#f15bb5",
+                "text": "#fee440"
             },
             "ragas": [
               {
@@ -214,11 +214,11 @@
           {
             "name": "Reflective & Calm",
             "color_scheme": {
-              "primary": "#556B2F",
-              "secondary": "#F5DEB3",
-              "accent": "#9ACD32",
-              "text": "#F8F8FF",
-              "background": "#6B8E23"
+                "background": "#333d29",
+                "primary": "#414833",
+                "secondary": "#582f0e",
+                "accent": "#7f4f24",
+                "text": "#656d4a"
             },
             "ragas": [
               {
@@ -244,90 +244,30 @@
           {
             "name": "Gentle & Soothing",
             "color_scheme": {
-              "primary": "#4169E1",
-              "secondary": "#E0FFFF",
-              "accent": "#87CEFA",
-              "text": "#191970",
-              "background": "#6495ED"
+                "background": "#252422",
+                "primary": "#403d39",
+                "secondary": "#ccc5b9",
+                "accent": "#eb5e28",
+                "text": "#fffcf2"
             },
             "ragas": [
               {
-                "name": "Vrindavani Sarang",
-                "description": "A beloved raga for the mid-day, Vrindavani Sarang evokes a feeling of peace, joy, and tranquility. Its lively yet soothing character is perfect for a relaxed afternoon.",
+                "name": "Sarang",
+                "description": "The Sarang family of ragas is perfect for midday. They are typically light, cheerful, and evoke a sense of playfulness and gentle romance, ideal for a soothing break.",
                 "aroha": "S R M P N S'",
                 "avroha": "S' n P M R S",
-                "pakad": "N. S R M R S, M P N S'",
+                "pakad": "N S R M R, P M R, n P M R S",
                 "vadi": "R (Shuddha Rishabh)",
                 "samvadi": "P (Pancham)"
               },
               {
                 "name": "Gaud Sarang",
-                "description": "A bright and cheerful raga, Gaud Sarang offers an uplifting and refreshing feel, suitable for maintaining a positive outlook and light concentration in the mid-day.",
-                "aroha": "S G R M G P M D P N S'",
-                "avroha": "S' N D P M' P G R S",
-                "pakad": "S G R M G, P R S",
+                "description": "A more complex form of Sarang, Gaud Sarang maintains the bright and cheerful midday character while adding a layer of depth and grandeur.",
+                "aroha": "S G R M G P M' D P N D S'",
+                "avroha": "S' D n P D M' P G R S",
+                "pakad": "S G R M G, P M G R S",
                 "vadi": "G (Shuddha Gandhar)",
                 "samvadi": "D (Shuddha Dhaivat)"
-              }
-            ]
-          },
-          {
-            "name": "Relaxed & Unwind",
-            "color_scheme": {
-              "primary": "#DAA520",
-              "secondary": "#F0E68C",
-              "accent": "#FFD700",
-              "text": "#5C4033",
-              "background": "#B8860B"
-            },
-            "ragas": [
-              {
-                "name": "Shudh Sarang",
-                "description": "A prominent raga from the Sarang family, Shudh Sarang is bright and uplifting, creating a mood of lightness and relaxation, perfect for a mid-day break.",
-                "aroha": "S R M P N S'",
-                "avroha": "S' N P M R S",
-                "pakad": "N. S R M P, P M R S",
-                "vadi": "R (Shuddha Rishabh)",
-                "samvadi": "P (Pancham)"
-              },
-              {
-                "name": "Brindavani Sarang",
-                "description": "As mentioned previously, this raga's peaceful and tranquil nature makes it a good fit for unwinding in the mid-day, evoking a sense of calm and gentle joy.",
-                "aroha": "N. S R M P N S'",
-                "avroha": "S' n P M R S N.",
-                "pakad": "n. S R - M R P M R S",
-                "vadi": "R (Shuddha Rishabh)",
-                "samvadi": "P (Pancham)"
-              }
-            ]
-          },
-          {
-            "name": "Contemplative & Thoughtful",
-            "color_scheme": {
-              "primary": "#696969",
-              "secondary": "#D3D3D3",
-              "accent": "#A9A9A9",
-              "text": "#F8F8FF",
-              "background": "#778899"
-            },
-            "ragas": [
-              {
-                "name": "Multani",
-                "description": "A profound and serious raga for the early afternoon, Multani evokes a mood of deep contemplation and yearning. It's often associated with a sense of introspection and slight pathos.",
-                "aroha": "N. S g M' P N S'",
-                "avroha": "S' N d P M' g R S",
-                "pakad": "g M' P, N d P, M' g R S",
-                "vadi": "P (Pancham)",
-                "samvadi": "S (Shadaj)"
-              },
-              {
-                "name": "Madhuvanti",
-                "description": "A beautiful and poignant afternoon raga, Madhuvanti is known for its sweet yet serious nature, evoking a contemplative and sometimes melancholic mood, suitable for thoughtful reflection.",
-                "aroha": "N. S G M' P N S'",
-                "avroha": "S' N D P M' G S",
-                "pakad": "N. S G M', P N D P M' G S",
-                "vadi": "P (Pancham)",
-                "samvadi": "S (Shadaj)"
               }
             ]
           }
@@ -337,113 +277,62 @@
         "time_slot": "02:00 PM - 06:00 PM",
         "moods": [
           {
-            "name": "Deep Reflection",
+            "name": "Romantic & Melancholic",
             "color_scheme": {
-              "primary": "#483D8B",
-              "secondary": "#E6E6FA",
-              "accent": "#9370DB",
-              "text": "#F5FFFA",
-              "background": "#6A5ACD"
+                "background": "#212f45",
+                "primary": "#272640",
+                "secondary": "#006466",
+                "accent": "#065a60",
+                "text": "#312244"
             },
             "ragas": [
               {
-                "name": "Poorvi",
-                "description": "A serious and dignified afternoon raga, Poorvi often carries a touch of melancholy and deep contemplation, ideal for profound reflective moments as the day progresses.",
-                "aroha": "S r G M' d N S'",
-                "avroha": "S' N d M' G r S",
-                "pakad": "M' d N S', M' G r S",
-                "vadi": "G (Shuddha Gandhar)",
-                "samvadi": "N (Shuddha Nishad)"
+                "name": "Bhimpalasi",
+                "description": "A beautiful and poignant afternoon raga, Bhimpalasi evokes a deep sense of yearning, romantic melancholy, and peaceful contemplation.",
+                "aroha": "n. S g M P n S'",
+                "avroha": "S' n P M g R S",
+                "pakad": "n. S M, M P g, R S",
+                "vadi": "M (Shuddha Madhyam)",
+                "samvadi": "S (Shadaj)"
               },
               {
-                "name": "Puriya Dhanashree",
-                "description": "A highly expressive and beautiful raga for the late afternoon, Puriya Dhanashree evokes a mood of intense devotion, romance, and poignant longing, perfect for deep, heartfelt reflection.",
-                "aroha": "N. r G M' N D P, M' G M' r S",
-                "avroha": "S' N D P M' G M' r S N.",
-                "pakad": "M' G r S N., M' N D P",
-                "vadi": "G (Shuddha Gandhar)",
-                "samvadi": "N (Shuddha Nishad)"
+                "name": "Patdeep",
+                "description": "Similar to Bhimpalasi but with a slightly more optimistic and lighter feel, Patdeep is perfect for a gentle, romantic, and reflective afternoon.",
+                "aroha": "n. S G M P N S'",
+                "avroha": "S' N P M G R S",
+                "pakad": "G M P N S', G M P G R S",
+                "vadi": "P (Pancham)",
+                "samvadi": "S (Shadaj)"
               }
             ]
           },
           {
-            "name": "Relaxed & Pleasant",
+            "name": "Joyful & Celebratory",
             "color_scheme": {
-              "primary": "#8FBC8F",
-              "secondary": "#F0FFF0",
-              "accent": "#98FB98",
-              "text": "#2F4F4F",
-              "background": "#A2CD5A"
+                "background": "#8d0801",
+                "primary": "#bf0603",
+                "secondary": "#708d81",
+                "accent": "#f4d58d",
+                "text": "#001427"
             },
             "ragas": [
               {
-                "name": "Shree",
-                "description": "A dignified and serious raga, Shree is often associated with a settled and calm mind, providing a sense of solemn peace as the day moves towards evening.",
-                "aroha": "S r M' P N S'",
-                "avroha": "S' N d P M' G r S",
-                "pakad": "M' P N S', N d P M' G r S",
-                "vadi": "r (Komal Rishabh)",
-                "samvadi": "P (Pancham)"
-              }
-            ]
-          },
-          {
-            "name": "Winding Down / Serene",
-            "color_scheme": {
-              "primary": "#5F9EA0",
-              "secondary": "#E0FFFF",
-              "accent": "#87CEEB",
-              "text": "#191970",
-              "background": "#7FFFD4"
-            },
-            "ragas": [
-              {
-                "name": "Marwa",
-                "description": "A profound and introspective raga for sunset, Marwa evokes a deep sense of calm, sometimes tinged with solitude or longing. It's ideal for a serene transition into evening.",
-                "aroha": "N. r G M' D N S'",
-                "avroha": "S' N D M' G r S N.",
-                "pakad": "G M' D N S', r G M' D M' G r S",
-                "vadi": "r (Komal Rishabh)",
-                "samvadi": "D (Shuddha Dhaivat)"
+                "name": "Dhani",
+                "description": "A light and joyful pentatonic raga, Dhani is full of festive and celebratory energy, making it a perfect choice for an uplifting and happy afternoon.",
+                "aroha": "n. S g M P n S'",
+                "avroha": "S' n P M g S",
+                "pakad": "g M P n P, g M g S",
+                "vadi": "g (Komal Gandhar)",
+                "samvadi": "n (Komal Nishad)"
               },
               {
-                "name": "Puriya",
-                "description": "Similar to Marwa, Puriya is an intense and contemplative sunset raga, known for its deep, almost mystical quality, perfect for winding down with profound thoughts.",
-                "aroha": "N. r G M' d N S'",
-                "avroha": "S' N d M' G r S N.",
-                "pakad": "r G M', d M' G r S N.",
-                "vadi": "G (Shuddha Gandhar)",
-                "samvadi": "N (Shuddha Nishad)"
-              },
-              {
-                "name": "Sohini",
-                "description": "A bright and majestic raga for sunset, Sohini creates a grand yet reflective mood, suitable for an elevated sense of serenity as the day closes.",
-                "aroha": "S G M' D N S'",
-                "avroha": "S' N D M' G S",
-                "pakad": "G M' D N S', M' G S",
-                "vadi": "G (Shuddha Gandhar)",
-                "samvadi": "N (Shuddha Nishad)"
-              }
-            ]
-          },
-          {
-            "name": "Anticipation & Readiness for Evening",
-            "color_scheme": {
-              "primary": "#B22222",
-              "secondary": "#FAEBD7",
-              "accent": "#CD5C5C",
-              "text": "#F8F8FF",
-              "background": "#DC143C"
-            },
-            "ragas": [
-              {
-                "name": "Yaman",
-                "description": "The iconic evening raga, Yaman signifies the transition to dusk. It's full of romance, peace, and beauty, evoking a mood of gentle anticipation and warmth.",
-                "aroha": "N. R G M' D N S'",
-                "avroha": "S' N D P M' G R S N.",
-                "pakad": "N. R G M' D N S', P M' G R S",
-                "vadi": "G (Shuddha Gandhar)",
-                "samvadi": "N (Shuddha Nishad)"
+                "name": "Multani",
+                "description": "A majestic and profound raga for the late afternoon, Multani creates a feeling of grandeur, devotion, and deep peace as the day winds down.",
+                "aroha": "n. S g M' P N S'",
+                "avroha": "S' N P M' g r S",
+                "pakad": "N S M' g P M' g r S",
+                "vadi": "P (Pancham)",
+                "samvadi": "S (Shadaj)"
               }
             ]
           }
@@ -453,141 +342,62 @@
         "time_slot": "06:00 PM - 10:00 PM",
         "moods": [
           {
-            "name": "Romantic & Peaceful",
+            "name": "Mysterious & Ethereal",
             "color_scheme": {
-              "primary": "#8A2BE2",
-              "secondary": "#E6E6FA",
-              "accent": "#9370DB",
-              "text": "#F5FFFA",
-              "background": "#9400D3"
+                "background": "#bc00dd",
+                "primary": "#d100d1",
+                "secondary": "##2d00f7",
+                "accent": "#6a00f4",
+                "text": "#f20089"
+            },
+            "ragas": [
+              {
+                "name": "Marwa",
+                "description": "A profound and introspective raga for sunset, Marwa creates a unique atmosphere of mystery, contemplation, and a beautiful, philosophical detachment.",
+                "aroha": "S r G M' D N S'",
+                "avroha": "S' N D M' G r S",
+                "pakad": "D M' G r, G M' D, M' G r S",
+                "vadi": "r (Komal Rishabh)",
+                "samvadi": "D (Shuddha Dhaivat)"
+              },
+              {
+                "name": "Puriya",
+                "description": "Similar to Marwa, Puriya is a deep and meditative raga for the evening, evoking a sense of calm, tranquility, and ethereal beauty.",
+                "aroha": "N. r G M' D N S'",
+                "avroha": "S' N D M' G r S",
+                "pakad": "N. r G, G M' D, G M' r G, M' r S",
+                "vadi": "G (Shuddha Gandhar)",
+                "samvadi": "N (Shuddha Nishad)"
+              }
+            ]
+          },
+          {
+            "name": "Peaceful & Meditative",
+            "color_scheme": {
+                "background": "#01161e",
+                "primary": "#124559",
+                "secondary": "#598392",
+                "accent": "#aec3b0",
+                "text": "#eff6e0"
             },
             "ragas": [
               {
                 "name": "Yaman",
-                "description": "The quintessential evening raga, Yaman is full of romance, peace, and beauty. Its majestic yet soothing character makes it perfect for the evening's unfolding.",
-                "aroha": "N. R G M' D N S'",
-                "avroha": "S' N D P M' G R S N.",
-                "pakad": "N. R G M' D N S', P M' G R S",
-                "vadi": "G (Shuddha Gandhar)",
-                "samvadi": "N (Shuddha Nishad)"
-              },
-              {
-                "name": "Bhimpalasi",
-                "description": "A popular and sweet raga for the early evening, Bhimpalasi evokes a mood of longing, devotion, and gentle romance. It's deeply melodic and calming.",
-                "aroha": "N. S g M P n S'",
-                "avroha": "S' n P M g R S",
-                "pakad": "g M P n S', P M g R S",
-                "vadi": "M (Shuddha Madhyam)",
-                "samvadi": "S (Shadaj)"
-              },
-              {
-                "name": "Poorvi Dhanashree",
-                "description": "A beautiful and poignant evening raga, Poorvi Dhanashree is rich in emotion, perfect for a romantic and deeply felt atmosphere as the night sets in.",
-                "aroha": "N. r G M' N D P, M' G M' r S",
-                "avroha": "S' N D P M' G M' r S N.",
-                "pakad": "M' G r S N., M' N D P",
-                "vadi": "G (Shuddha Gandhar)",
-                "samvadi": "N (Shuddha Nishad)"
-              }
-            ]
-          },
-          {
-            "name": "Devotional & Contemplative",
-            "color_scheme": {
-              "primary": "#8B4513",
-              "secondary": "#DEB887",
-              "accent": "#CD853F",
-              "text": "#F5FFFA",
-              "background": "#A0522D"
-            },
-            "ragas": [
-              {
-                "name": "Kedar",
-                "description": "A majestic and devotional raga, Kedar creates a grand and respectful atmosphere, ideal for an evening of contemplative prayer or solemn reflection.",
-                "aroha": "S M G P M N S'",
-                "avroha": "S' N D P M' P D P M G R S",
-                "pakad": "S M G P M, M N S'",
-                "vadi": "M (Shuddha Madhyam)",
-                "samvadi": "S (Shadaj)"
-              },
-              {
-                "name": "Khamaj",
-                "description": "A light and romantic raga, Khamaj is versatile and pleasant, often used for thumris and light classical forms. It evokes a relaxed, slightly playful devotional mood.",
-                "aroha": "S G M P D N S'",
-                "avroha": "S' n D P M G R S",
-                "pakad": "G M P D n D P, M G R S",
-                "vadi": "G (Shuddha Gandhar)",
-                "samvadi": "N (Komal Nishad)"
-              }
-            ]
-          },
-          {
-            "name": "Festive & Celebratory",
-            "color_scheme": {
-              "primary": "#FF4500",
-              "secondary": "#FFF8DC",
-              "accent": "#FF8C00",
-              "text": "#2F4F4F",
-              "background": "#FF6347"
-            },
-            "ragas": [
-              {
-                "name": "Bageshree",
-                "description": "A very popular and beautiful raga, Bageshree is evocative of romance, longing, and joy. It's often used for compositions expressing love and celebration in the late evening.",
-                "aroha": "N. D. S g M D n S'",
-                "avroha": "S' n D M g R S",
-                "pakad": "D. n. S g M, M D n D M g R S",
-                "vadi": "M (Shuddha Madhyam)",
-                "samvadi": "S (Shadaj)"
-              },
-              {
-                "name": "Bihag",
-                "description": "A majestic and celebratory raga, Bihag creates a grand and festive atmosphere. It's bright and uplifting, perfect for joyful gatherings and a celebratory mood.",
-                "aroha": "N. S G M P N S'",
+                "description": "The quintessential evening raga, Yaman is peaceful, majestic, and full of romantic beauty. It's calming and expansive, perfect for unwinding at the end of the day.",
+                "aroha": "N. R G M' P D N S'",
                 "avroha": "S' N D P M' G R S",
-                "pakad": "N. S G M P, G M G R S",
+                "pakad": "N. R G R S, P M' G R S",
                 "vadi": "G (Shuddha Gandhar)",
                 "samvadi": "N (Shuddha Nishad)"
               },
               {
-                "name": "Desh",
-                "description": "A patriotic and romantic raga, Desh is full of emotion and cheer. Its lively and melodic character is perfect for a festive and vibrant late evening.",
-                "aroha": "S R M P N S'",
-                "avroha": "S' n D P M G R S",
-                "pakad": "R M P N S', M P G R S",
-                "vadi": "R (Shuddha Rishabh)",
-                "samvadi": "P (Pancham)"
-              }
-            ]
-          },
-          {
-            "name": "Calm & Serene (Winding Down)",
-            "color_scheme": {
-              "primary": "#48D1CC",
-              "secondary": "#E0FFFF",
-              "accent": "#00CED1",
-              "text": "#191970",
-              "background": "#66CDAA"
-            },
-            "ragas": [
-              {
-                "name": "Hamsadhwani",
-                "description": "A cheerful and uplifting raga, even in the evening, Hamsadhwani's bright and lively character is excellent for a light and positive mood while winding down.",
-                "aroha": "S R G P N S'",
-                "avroha": "S' N P G R S",
-                "pakad": "S R G P, G N P G R S",
-                "vadi": "R (Shuddha Rishabh)",
-                "samvadi": "D (Shuddha Dhaivat) - *Note: Dha is technically absent but its shadow implies this relationship*",
-                "note_on_samvadi": "While Dha is generally omitted, in practice, the relation between R and P (or a subtle hint of Dha) serves as Samvadi."
-              },
-              {
-                "name": "Tilak Kamod",
-                "description": "A beautiful and melodious raga, Tilak Kamod is known for its playful and romantic character, providing a soothing and pleasant experience as the night settles.",
-                "aroha": "S R G P S', R P S N.",
-                "avroha": "S' P M G S R N. S",
-                "pakad": "R S N. S P, M G R S",
+                "name": "Puriya Dhanashree",
+                "description": "A beautiful blend of Puriya and Dhanashree, this raga is deeply peaceful, sweet, and devotional, creating a perfect atmosphere for evening meditation and prayer.",
+                "aroha": "N. r G M' P D N S'",
+                "avroha": "S' N D P M' G r S",
+                "pakad": "N. r G M' P, M' G r G, r S",
                 "vadi": "P (Pancham)",
-                "samvadi": "S (Shadaj)"
+                "samvadi": "r (Komal Rishabh)"
               }
             ]
           }
@@ -597,114 +407,66 @@
         "time_slot": "10:00 PM - 04:00 AM",
         "moods": [
           {
-            "name": "Deep Relaxation & Introspection",
+            "name": "Passionate & Intense",
             "color_scheme": {
-              "primary": "#191970",
-              "secondary": "#ADD8E6",
-              "accent": "#4682B4",
-              "text": "#F8F8FF",
-              "background": "#000080"
+                "background": "#084c61",
+                "primary": "#177e89",
+                "secondary": "#db3a34",
+                "accent": "#ffc857",
+                "text": "#323031"
             },
             "ragas": [
-              {
-                "name": "Darbari Kanhra",
-                "description": "A profoundly serious, majestic, and introspective raga, Darbari Kanhra is perfect for deep late-night contemplation. Its gravitas evokes a sense of solemn peace.",
-                "aroha": "N. S R g M P d n S'",
-                "avroha": "S' d n P M P g R S",
-                "pakad": "g M P, d n P, M P g R S",
-                "vadi": "R (Shuddha Rishabh)",
-                "samvadi": "P (Pancham)"
-              },
               {
                 "name": "Malkauns",
-                "description": "A powerful and deeply meditative pentatonic raga, Malkauns evokes a sense of solemnity, peace, and profound introspection. It's ideal for deep night reflection.",
-                "aroha": "N. S g M d N S'",
-                "avroha": "S' N d M g S",
-                "pakad": "g M d N S', N d M g S",
+                "description": "A majestic, deep, and meditative raga for late night, Malkauns is known for its profound and intense character, capable of creating a powerful, trance-like state.",
+                "aroha": "n. S g M d n S'",
+                "avroha": "S' n d M g S",
+                "pakad": "g M d n S', g M g S",
                 "vadi": "M (Shuddha Madhyam)",
                 "samvadi": "S (Shadaj)"
-              },
-              {
-                "name": "Shahana Kanhra",
-                "description": "A variation of Darbari, Shahana Kanhra is slightly lighter but maintains the serious and introspective mood, suitable for deep relaxation and internal thought in the late night.",
-                "aroha": "N. S R g M P n S'",
-                "avroha": "S' n d P M g R S",
-                "pakad": "P n S' R', g M P g R S",
-                "vadi": "P (Pancham)",
-                "samvadi": "S (Shadaj)"
-              }
-            ]
-          },
-          {
-            "name": "Soothing & Sleep Prep",
-            "color_scheme": {
-              "primary": "#2F4F4F",
-              "secondary": "#B0E0E6",
-              "accent": "#66CDAA",
-              "text": "#F8F8FF",
-              "background": "#36454F"
-            },
-            "ragas": [
-              {
-                "name": "Bhairavi (light rendition)",
-                "description": "While traditionally a morning raga, a soft and light rendition of Bhairavi in the late night can be incredibly soothing and calming, often used as a concluding piece to prepare for sleep.",
-                "aroha": "S r g M P d n S'",
-                "avroha": "S' n d P M g r S",
-                "pakad": "g M P d n, d P M g r S",
-                "vadi": "M (Shuddha Madhyam)",
-                "samvadi": "S (Shadaj)"
-              },
-              {
-                "name": "Sindhura",
-                "description": "A light and pleasant raga, Sindhura offers a gentle and soothing melody, perfect for winding down and drifting off to sleep with a relaxed mind.",
-                "aroha": "S R M P D n S'",
-                "avroha": "S' n D P M R S",
-                "pakad": "R M P D n S', R S n D P",
-                "vadi": "R (Shuddha Rishabh)",
-                "samvadi": "P (Pancham)"
-              }
-            ]
-          },
-          {
-            "name": "Very Calm & Meditative (Almost Sleep-inducing)",
-            "color_scheme": {
-              "primary": "#000000",
-              "secondary": "#C0C0C0",
-              "accent": "#A9A9A9",
-              "text": "#F8F8FF",
-              "background": "#2F4F4F"
-            },
-            "ragas": [
-              {
-                "name": "Adana",
-                "description": "A serious and grand raga often performed in the deep night, Adana is suitable for profound contemplation and a sense of solemn quietude.",
-                "aroha": "S R M P n S'",
-                "avroha": "S' D n P G M R S",
-                "pakad": "S M P n S', D n P M R S",
-                "vadi": "S (Shadaj)",
-                "samvadi": "P (Pancham)"
               },
               {
                 "name": "Chandrakauns",
-                "description": "A beautiful and rare raga for the deep night, Chandrakauns evokes a serene and mystical quality, perfect for profound meditation and a sense of deep inner peace.",
-                "aroha": "N. S g M D N S'",
-                "avroha": "S' N D M g S N.",
-                "pakad": "N. S g M D N, D M g S",
+                "description": "Similar to Malkauns but with a slightly different flavor, Chandrakauns is equally profound and intense, offering a deeply meditative and introspective late-night experience.",
+                "aroha": "S g M D n S'",
+                "avroha": "S' n D M g S",
+                "pakad": "g M D, M g, S",
                 "vadi": "M (Shuddha Madhyam)",
                 "samvadi": "S (Shadaj)"
+              }
+            ]
+          },
+          {
+            "name": "Grand & Majestic",
+            "color_scheme": {
+                "background": "#0b090a",
+                "primary": "#161a1d",
+                "secondary": "#a4161a",
+                "accent": "#e5383b",
+                "text": "#ffffff"
+            },
+            "ragas": [
+              {
+                "name": "Darbari Kanada",
+                "description": "A profound and majestic late-night raga, Darbari Kanada is known for its deep, dignified, and emotionally moving character. It's a raga of immense grandeur and gravitas.",
+                "aroha": "S R g M P d n S'",
+                "avroha": "S' d n P M P g M R S",
+                "pakad": "S R g M R S, d. n. P.",
+                "vadi": "R (Shuddha Rishabh)",
+                "samvadi": "P (Pancham)"
               },
               {
-                "name": "Bageshree (slow rendition)",
-                "description": "A slow and extended rendition of Bageshree can provide a deeply soothing and introspective mood in the deep night, ideal for peaceful reflection before sleep.",
-                "aroha": "N. D. S g M D n S'",
-                "avroha": "S' n D M g R S",
-                "pakad": "D. n. S g M, M D n D M g R S",
-                "vadi": "M (Shuddha Madhyam)",
-                "samvadi": "S (Shadaj)"
+                "name": "Adana",
+                "description": "A powerful and energetic raga, Adana is often performed in the late night and is characterized by its bold, majestic, and celebratory feel.",
+                "aroha": "S R g M P d n S'",
+                "avroha": "S' d n P M P g M R S",
+                "pakad": "S R g M P, d n S'",
+                "vadi": "S (Shadaj)",
+                "samvadi": "P (Pancham)"
               }
             ]
           }
         ]
       }
     ]
-  }
+}
