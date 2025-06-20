@@ -6,11 +6,11 @@
         {
           "name": "Spiritual Awakening",
           "color_scheme": {
-            "primary": "#36454F",
-            "secondary": "#E6E6FA",
-            "accent": "#6A5ACD",
-            "text": "#F8F8FF",
-            "background": "#2F4F4F"
+            "primary": "#283618",
+            "secondary": "#606C38",
+            "accent": "#B6AD90",
+            "text": "#FEFAE0",
+            "background": "#333D29"
           },
           "ragas": [
             {
@@ -45,11 +45,11 @@
         {
           "name": "Gentle Start/Freshness",
           "color_scheme": {
-            "primary": "#483D8B",
-            "secondary": "#FFFACD",
-            "accent": "#FFD700",
-            "text": "#F5FFFA",
-            "background": "#5F9EA0"
+            "primary": "#BDE0FE",
+            "secondary": "#A2D2FF",
+            "accent": "#FFC8DD",
+            "text": "#001427",
+            "background": "#CDDBDB"
           },
           "ragas": [
             {
@@ -80,11 +80,11 @@
         {
           "name": "Devotional & Uplifting",
           "color_scheme": {
-            "primary": "#8B0000",
-            "secondary": "#FFDEAD",
-            "accent": "#DAA520",
-            "text": "#FFFAFA",
-            "background": "#A52A2A"
+            "primary": "#8D0801",
+            "secondary": "#BF0603",
+            "accent": "#F4D58D",
+            "text": "#FFF8DC",
+            "background": "#001427"
           },
           "ragas": [
             {
@@ -119,11 +119,11 @@
         {
           "name": "Energetic & Positive Start",
           "color_scheme": {
-            "primary": "#FFD700",
-            "secondary": "#ADD8E6",
-            "accent": "#00BFFF",
-            "text": "#2F4F4F",
-            "background": "#87CEEB"
+            "primary": "#FF9F1C",
+            "secondary": "#FFBF69",
+            "accent": "#2EC4B6",
+            "text": "#252422",
+            "background": "#CBF3F0"
           },
           "ragas": [
             {
@@ -149,11 +149,11 @@
         {
           "name": "Focused & Productive",
           "color_scheme": {
-            "primary": "#2E8B57",
-            "secondary": "#F0FFF0",
-            "accent": "#50C878",
-            "text": "#191970",
-            "background": "#3CB371"
+            "primary": "#003566",
+            "secondary": "#001D3D",
+            "accent": "#FFC300",
+            "text": "#F8F8FF",
+            "background": "#000814"
           },
           "ragas": [
             {
@@ -179,11 +179,11 @@
         {
           "name": "Refreshing & Calm",
           "color_scheme": {
-            "primary": "#6A5ACD",
-            "secondary": "#E0FFFF",
-            "accent": "#4682B4",
-            "text": "#1C1C1C",
-            "background": "#7B68EE"
+            "primary": "#CDDBDB",
+            "secondary": "#AEC3B0",
+            "accent": "#598392",
+            "text": "#01161E",
+            "background": "#EFF6E0"
           },
           "ragas": [
             {
@@ -214,11 +214,11 @@
         {
           "name": "Reflective & Calm",
           "color_scheme": {
-            "primary": "#556B2F",
-            "secondary": "#F5DEB3",
-            "accent": "#9ACD32",
-            "text": "#F8F8FF",
-            "background": "#6B8E23"
+            "primary": "#355070",
+            "secondary": "#6D597A",
+            "accent": "#B56576",
+            "text": "#EAAC8B",
+            "background": "#E56B6F"
           },
           "ragas": [
             {
@@ -244,11 +244,11 @@
         {
           "name": "Gentle & Soothing",
           "color_scheme": {
-            "primary": "#4169E1",
-            "secondary": "#E0FFFF",
-            "accent": "#87CEFA",
-            "text": "#191970",
-            "background": "#6495ED"
+            "primary": "#124559",
+            "secondary": "#598392",
+            "accent": "#EFF6E0",
+            "text": "#01161E",
+            "background": "#AEC3B0"
           },
           "ragas": [
             {
@@ -274,11 +274,11 @@
         {
           "name": "Relaxed & Unwind",
           "color_scheme": {
-            "primary": "#DAA520",
-            "secondary": "#F0E68C",
-            "accent": "#FFD700",
-            "text": "#5C4033",
-            "background": "#B8860B"
+            "primary": "#FFBF69",
+            "secondary": "#FF9F1C",
+            "accent": "#CBF3F0",
+            "text": "#252422",
+            "background": "#FFFFFF"
           },
           "ragas": [
             {
@@ -304,11 +304,11 @@
         {
           "name": "Contemplative & Thoughtful",
           "color_scheme": {
-            "primary": "#696969",
-            "secondary": "#D3D3D3",
-            "accent": "#A9A9A9",
-            "text": "#F8F8FF",
-            "background": "#778899"
+            "primary": "#403D39",
+            "secondary": "#252422",
+            "accent": "#EB5E28",
+            "text": "#FFFCF2",
+            "background": "#CCC5B9"
           },
           "ragas": [
             {
@@ -339,11 +339,11 @@
         {
           "name": "Deep Reflection",
           "color_scheme": {
-            "primary": "#483D8B",
-            "secondary": "#E6E6FA",
-            "accent": "#9370DB",
-            "text": "#F5FFFA",
-            "background": "#6A5ACD"
+            "primary": "#355070",
+            "secondary": "#6D597A",
+            "accent": "#E56B6F",
+            "text": "#EAAC8B",
+            "background": "#B56576"
           },
           "ragas": [
             {
@@ -369,11 +369,11 @@
         {
           "name": "Relaxed & Pleasant",
           "color_scheme": {
-            "primary": "#8FBC8F",
-            "secondary": "#F0FFF0",
-            "accent": "#98FB98",
-            "text": "#2F4F4F",
-            "background": "#A2CD5A"
+            "primary": "#C2C5AA",
+            "secondary": "#A4AC86",
+            "accent": "#7F4F24",
+            "text": "#582F0E",
+            "background": "#B6AD90"
           },
           "ragas": [
             {
@@ -390,11 +390,11 @@
         {
           "name": "Winding Down / Serene",
           "color_scheme": {
-            "primary": "#5F9EA0",
-            "secondary": "#E0FFFF",
-            "accent": "#87CEEB",
-            "text": "#191970",
-            "background": "#7FFFD4"
+            "primary": "#414833",
+            "secondary": "#656D4A",
+            "accent": "#936639",
+            "text": "#B6AD90",
+            "background": "#333D29"
           },
           "ragas": [
             {
@@ -429,11 +429,11 @@
         {
           "name": "Anticipation & Readiness for Evening",
           "color_scheme": {
-            "primary": "#B22222",
-            "secondary": "#FAEBD7",
-            "accent": "#CD5C5C",
-            "text": "#F8F8FF",
-            "background": "#DC143C"
+            "primary": "#CDDBDB",
+            "secondary": "#F4D58D",
+            "accent": "#BF0603",
+            "text": "#001427",
+            "background": "#708D81"
           },
           "ragas": [
             {
@@ -455,11 +455,11 @@
         {
           "name": "Romantic & Peaceful",
           "color_scheme": {
-            "primary": "#8A2BE2",
-            "secondary": "#E6E6FA",
-            "accent": "#9370DB",
-            "text": "#F5FFFA",
-            "background": "#9400D3"
+            "primary": "#CDDBDB",
+            "secondary": "#CDDBDB",
+            "accent": "#FFAFCC",
+            "text": "#CDDBDB",
+            "background": "#CDB4DB"
           },
           "ragas": [
             {
@@ -494,11 +494,11 @@
         {
           "name": "Devotional & Contemplative",
           "color_scheme": {
-            "primary": "#8B4513",
-            "secondary": "#DEB887",
-            "accent": "#CD853F",
-            "text": "#F5FFFA",
-            "background": "#A0522D"
+            "primary": "#252422",
+            "secondary": "#403D39",
+            "accent": "#EB5E28",
+            "text": "#FFFCF2",
+            "background": "#CCC5B9"
           },
           "ragas": [
             {
@@ -524,11 +524,11 @@
         {
           "name": "Festive & Celebratory",
           "color_scheme": {
-            "primary": "#FF4500",
-            "secondary": "#FFF8DC",
-            "accent": "#FF8C00",
-            "text": "#2F4F4F",
-            "background": "#FF6347"
+            "primary": "#BA181B",
+            "secondary": "#A4161A",
+            "accent": "#E5383B",
+            "text": "#F5F3F4",
+            "background": "#660708"
           },
           "ragas": [
             {
@@ -544,7 +544,7 @@
               "name": "Bihag",
               "description": "A majestic and celebratory raga, Bihag creates a grand and festive atmosphere. It's bright and uplifting, perfect for joyful gatherings and a celebratory mood.",
               "aroha": "N. S G M P N S'",
-              "avroha": "S' N D P M' G R S",
+              "avroha": "S' N D P M G R S",
               "pakad": "N. S G M P, G M G R S",
               "vadi": "G (Shuddha Gandhar)",
               "samvadi": "N (Shuddha Nishad)"
@@ -563,11 +563,11 @@
         {
           "name": "Calm & Serene (Winding Down)",
           "color_scheme": {
-            "primary": "#48D1CC",
-            "secondary": "#E0FFFF",
-            "accent": "#00CED1",
-            "text": "#191970",
-            "background": "#66CDAA"
+            "primary": "#00BBF9",
+            "secondary": "#00F5D4",
+            "accent": "#F15BB5",
+            "text": "#9B5DE5",
+            "background": "#FEE440"
           },
           "ragas": [
             {
@@ -577,7 +577,7 @@
               "avroha": "S' N P G R S",
               "pakad": "S R G P, G N P G R S",
               "vadi": "R (Shuddha Rishabh)",
-              "samvadi": "D (Shuddha Dhaivat) - *Note: Dha is technically absent but its shadow implies this relationship*",
+              "samvadi": "D (Shuddha Dhaivat)",
               "note_on_samvadi": "While Dha is generally omitted, in practice, the relation between R and P (or a subtle hint of Dha) serves as Samvadi."
             },
             {
@@ -599,11 +599,11 @@
         {
           "name": "Deep Relaxation & Introspection",
           "color_scheme": {
-            "primary": "#191970",
-            "secondary": "#ADD8E6",
-            "accent": "#4682B4",
+            "primary": "#001D3D",
+            "secondary": "#003566",
+            "accent": "#FFD60A",
             "text": "#F8F8FF",
-            "background": "#000080"
+            "background": "#000814"
           },
           "ragas": [
             {
@@ -638,11 +638,11 @@
         {
           "name": "Soothing & Sleep Prep",
           "color_scheme": {
-            "primary": "#2F4F4F",
-            "secondary": "#B0E0E6",
-            "accent": "#66CDAA",
+            "primary": "#006466",
+            "secondary": "#065A60",
+            "accent": "#1B3A4B",
             "text": "#F8F8FF",
-            "background": "#36454F"
+            "background": "#144552"
           },
           "ragas": [
             {
@@ -668,11 +668,11 @@
         {
           "name": "Very Calm & Meditative (Almost Sleep-inducing)",
           "color_scheme": {
-            "primary": "#000000",
-            "secondary": "#C0C0C0",
-            "accent": "#A9A9A9",
-            "text": "#F8F8FF",
-            "background": "#2F4F4F"
+            "primary": "#001427",
+            "secondary": "#212F45",
+            "accent": "#4D194D",
+            "text": "#F5F3F4",
+            "background": "#0B525B"
           },
           "ragas": [
             {

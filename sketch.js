@@ -140,7 +140,7 @@ function parseSargamToMidi(sargamString, isAvroha = false) {
     if (!sargamString) return [];
 
     const sargamMap = {
-        'S': 0, 'r': 1, 'R': 2, 'g': 3, 'G': 4, 'm': 5, 'M': 6, "M'": 6,
+        'S': 0, 'r': 1, 'R': 2, 'g': 3, 'G': 4, 'M': 5, "M'": 6,
         'P': 7, 'd': 8, 'D': 9, 'n': 10, 'N': 11
     };
 
@@ -159,8 +159,7 @@ function parseSargamToMidi(sargamString, isAvroha = false) {
     let lastPitchClass = -1;
 
     for (const note of notes) {
-        let noteName = note.replace(/[.']/g, '');
-        if (noteName === "M'") noteName = 'M';
+        const noteName = note.replace(/[.']/g, '');
         const pitchClass = sargamMap[noteName];
 
         if (pitchClass === undefined) continue;
@@ -187,7 +186,7 @@ function parseSargamToMidi(sargamString, isAvroha = false) {
 
 function processRagaData() {
     const sargamToMidiOffset = {
-        'S': 0, 'r': 1, 'R': 2, 'g': 3, 'G': 4, 'm': 5, 'M': 6, "M'": 6,
+        'S': 0, 'r': 1, 'R': 2, 'g': 3, 'G': 4, 'M': 5, "M'": 6,
         'P': 7, 'd': 8, 'D': 9, 'n': 10, 'N': 11
     };
 
@@ -469,7 +468,7 @@ function windowResized() {
 
 function drawSheenGrid() {
     textCanvas.push();
-    textCanvas.stroke(0, 0, 0, 100); // Thin black lines with some transparency
+    textCanvas.stroke(0, 0, 0, 30); // Thin black lines with some transparency
     textCanvas.strokeWeight(1);
     
     const spacing = 3;

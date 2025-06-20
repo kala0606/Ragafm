@@ -38,8 +38,8 @@ canvas {
 }
 
 #app-logo {
-    width: 40px;
-    height: 40px;
+    width: 80px;
+    height: 80px;
     background-color: #fff; /* Default color (white) */
     -webkit-mask-image: url(logo.svg);
     mask-image: url(logo.svg);
