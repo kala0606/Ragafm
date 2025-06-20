@@ -472,7 +472,7 @@ function drawSheenGrid() {
     textCanvas.stroke(0, 0, 0, 100); // Thin black lines with some transparency
     textCanvas.strokeWeight(1);
     
-    const spacing = 2;
+    const spacing = 3;
 
     // Vertical lines
     for (let x = 0; x < textCanvas.width; x += spacing) {
