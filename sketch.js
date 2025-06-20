@@ -1039,7 +1039,7 @@ function drawGrid() {
             
             // Fade out the lit amount
             if (cell.litAmount > 0) {
-                cell.litAmount = max(0, cell.litAmount - 0.04); 
+                cell.litAmount = max(0, cell.litAmount - 0.1); 
             }
 
             // Apply glow effect via shadow
