@@ -159,8 +159,14 @@ function parseSargamToMidi(sargamString, isAvroha = false) {
     let lastPitchClass = -1;
 
     for (const note of notes) {
-        const noteName = note.replace(/[.']/g, '');
-        const pitchClass = sargamMap[noteName];
+        let noteName = note;
+        let pitchClass = sargamMap[noteName];
+
+        if (pitchClass === undefined) {
+            // Probably has an octave marker, so strip it and try again.
+            noteName = note.replace(/[.']/g, '');
+            pitchClass = sargamMap[noteName];
+        }
 
         if (pitchClass === undefined) continue;
 
@@ -197,8 +203,15 @@ function processRagaData() {
                     .map(phrase => parseSargamToMidi(phrase.trim()))
                     .filter(phrase => phrase.length > 0);
 
-                const vadiNoteName = raga.vadi.split(' ')[0].replace(/[.']/g, '');
-                const samvadiNoteName = raga.samvadi.split(' ')[0].replace(/[.']/g, '');
+                let vadiNoteName = raga.vadi.split(' ')[0];
+                if (!sargamToMidiOffset.hasOwnProperty(vadiNoteName)) {
+                    vadiNoteName = vadiNoteName.replace(/[.']/g, '');
+                }
+
+                let samvadiNoteName = raga.samvadi.split(' ')[0];
+                if (!sargamToMidiOffset.hasOwnProperty(samvadiNoteName)) {
+                    samvadiNoteName = samvadiNoteName.replace(/[.']/g, '');
+                }
 
                 const processedRaga = {
                     ...raga,

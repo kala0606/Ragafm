@@ -340,9 +340,20 @@ canvas {
 
 @media (max-width: 768px) {
     body.experience-view #logo-container {
+        top: 10px;
         left: auto;
         right: 20px;
         transform: none;
+    }
+
+    body.experience-view #app-logo {
+        width: 40px;
+        height: 40px;
+        padding: 30px;
+    }
+
+    .top-bar {
+        left: 20px; /* Revert to original position */
     }
 }
 
