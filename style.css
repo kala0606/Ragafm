@@ -28,7 +28,7 @@ canvas {
 }
 
 #app-logo {
-    width: 50px;
+    width: 40px;
     height: auto;
     filter: invert(1);
 }
@@ -186,7 +186,7 @@ canvas {
 
 .control-group label {
     font-size: 1.2em;
-    font-weight: 300;
+    font-weight: 500;
     color: var(--text-color);
     
 }
@@ -203,8 +203,8 @@ canvas {
     transform: translate(-50%, -50%);
     width: 22px; /* Thumb size */
     height: 22px; /* Thumb size */
-    background: var(--accent-color);
-    color: var(--background-color);
+    background: #fff;
+    color: #000;
     border-radius: 50%;
     font-size: 0.9em;
     font-weight: bold;
@@ -217,7 +217,7 @@ canvas {
 
 #start-stop-button {
     background-color: transparent;
-    border: 2px solid white;
+    border: 0px solid white;
     color: white;
     width: 50px;
     height: 50px;
@@ -296,7 +296,7 @@ canvas {
 #back-button {
     color: white;
     background: transparent;
-    border: 3px solid white;
+    border: 0px solid white;
     border-radius: 50%;
     width: 35px;
     height: 35px;
