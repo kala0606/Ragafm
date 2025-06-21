@@ -136,6 +136,9 @@ const PALETTE_SIZE = 256; // Number of colors to generate for the palette
 // Hindi Note Letters
 let currentPlayingNote = null;
 
+// Screen Wake Lock
+let wakeLock = null;
+
 function parseSargamToMidi(sargamString, isAvroha = false) {
     if (!sargamString) return [];
 
@@ -498,38 +501,53 @@ function drawSheenGrid() {
     textCanvas.pop();
 }
 
-function togglePlayback() {
+async function togglePlayback() {
   // Use the async nature of Tone.start()
-  Tone.start().then(() => {
-    isPlaying = !isPlaying;
+  await Tone.start();
 
-    const startStopButton = document.getElementById('start-stop-button');
-    if (isPlaying) {
-        startStopButton.classList.add('playing');
-    } else {
-        startStopButton.classList.remove('playing');
-    }
+  isPlaying = !isPlaying;
 
-    if (isPlaying) {
-        setDynamicInterval();
-        console.log("Playback started/resumed");
-    } else {
-        clearInterval(dynamicInterval);
-        if (melodySampler) {
-          melodySampler.releaseAll();
-        }
-        if (stringSampler) {
-          stringSampler.releaseAll();
-        }
-        if (kotoSampler) {
-          kotoSampler.releaseAll();
-        }
-        if (chordSampler) {
-            chordSampler.releaseAll();
-        }
-        console.log("Playback stopped");
-    }
-  });
+  const startStopButton = document.getElementById('start-stop-button');
+  if (isPlaying) {
+      startStopButton.classList.add('playing');
+  } else {
+      startStopButton.classList.remove('playing');
+  }
+
+  if (isPlaying) {
+      setDynamicInterval();
+      try {
+          if ('wakeLock' in navigator) {
+              wakeLock = await navigator.wakeLock.request('screen');
+              console.log('Screen Wake Lock is active.');
+              wakeLock.addEventListener('release', () => {
+                  console.log('Screen Wake Lock was released.');
+              });
+          }
+      } catch (err) {
+          console.error(`${err.name}, ${err.message}`);
+      }
+      console.log("Playback started/resumed");
+  } else {
+      clearInterval(dynamicInterval);
+      if (melodySampler) {
+        melodySampler.releaseAll();
+      }
+      if (stringSampler) {
+        stringSampler.releaseAll();
+      }
+      if (kotoSampler) {
+        kotoSampler.releaseAll();
+      }
+      if (chordSampler) {
+          chordSampler.releaseAll();
+      }
+      if (wakeLock !== null) {
+          wakeLock.release();
+          wakeLock = null;
+      }
+      console.log("Playback stopped");
+  }
 }
 
 // Pick how many bars until the next chord
