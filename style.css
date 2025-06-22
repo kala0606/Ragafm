@@ -203,7 +203,7 @@ body.experience-view #app-logo {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 30px;
     box-sizing: border-box;
     z-index: 1001;
     pointer-events: auto;
