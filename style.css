@@ -52,40 +52,48 @@ canvas {
     padding-top: 40px;
 }
 
+body.experience-view #logo-container {
+    left: auto;
+    right: 20px;
+    transform: none;
+}
+
+body.experience-view #app-logo {
+    width: 35px;
+    height: 35px;
+}
+
+#app {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.5s ease-out;
+}
+
+#app.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
 .top-bar {
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 10;
     color: white;
     font-family: 'Helvetica Neue', 'Arial', sans-serif;
     font-weight: 200;
-    letter-spacing: 0px;
     display: flex;
     align-items: center;
-    gap: 1rem;
-    justify-content: center; /* Center the raga name */
-}
-
-#cast-button-container {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.cast-button {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid var(--primary-color);
-    color: var(--text-color);
-    padding: 8px 15px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.cast-button:hover {
-    background: var(--primary-color);
+    justify-content: center;
+    position: relative;
+    padding: 25px 20px;
+    pointer-events: auto;
 }
 
 #welcome-screen {
@@ -105,6 +113,8 @@ canvas {
     opacity: 1;
     overflow-y: auto; /* Allow scrolling for main content */
     padding: 2rem 1rem;
+    transform: translateX(0);
+    pointer-events: auto;
 }
 
 #welcome-screen.hidden {
@@ -185,184 +195,130 @@ canvas {
     line-height: 1.5;
 }
 
-.top-bar h1 {
-    margin: 0;
-    font-size: 1.5rem; /* Adjusted for balance */
-    font-weight: 500;
-    color: white;
-}
-
-.controls-container {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
+.footer-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     display: flex;
+    justify-content: center;
     align-items: center;
-    gap: 30px;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
+    padding: 20px;
+    box-sizing: border-box;
+    z-index: 1001;
+    pointer-events: auto;
 }
 
-.control-group {
+#playback-controls {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
-.control-group label {
-    font-size: 1.2em;
-    font-weight: 500;
-    color: var(--text-color);
-    
+.control-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 0px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-family: 'Helvetica Neue', sans-serif;
+    transition: background-color 0.2s;
 }
 
-.slider-wrapper {
+#mode-toggle {
     position: relative;
-    width: 150px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 200px;
+    height: 50px;
+    padding: 0 20px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px); /* For Safari */
+    /* border: 1px solid rgba(255, 255, 255, 0.2); */
+    border-radius: 50px;
+    cursor: pointer;
+    overflow: hidden;
+    z-index: 0;
 }
 
-#slider-tooltip {
+#mode-toggle .mode-text {
+    z-index: 1;
+    font-weight: 500;
+    transition: color 0.4s ease;
+}
+
+#mode-toggle .knob {
     position: absolute;
-    top: 50%; /* Center vertically on the track */
-    left: 50%; /* Position is set by JS */
-    transform: translate(-50%, -50%);
-    width: 25px; /* Thumb size */
-    height: 25px; /* Thumb size */
-    background: #fff;
-    color: #000;
-    border-radius: 50%;
-    font-size: 0.9em;
-    font-weight: bold;
-    pointer-events: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    line-height: 1;
+    top: 2px;
+    left: 2px;
+    width: 50%;
+    height: calc(100% - 4px);
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 50px;
+    transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    z-index: 0;
+}
+
+/* Default (Ambient) State - Knob is on the left */
+#mode-toggle .mode-text:nth-child(1) { color: #000; } /* Text under knob is black */
+#mode-toggle .mode-text:nth-child(2) { color: #fff; }
+
+/* Rhythm Active State - Knob moves to the right */
+#mode-toggle.rhythm-active .knob {
+    left: calc(50% - 2px);
+}
+#mode-toggle.rhythm-active .mode-text:nth-child(1) { color: #fff; }
+#mode-toggle.rhythm-active .mode-text:nth-child(2) { color: #000; } /* Text under knob is black */
+
+.control-button:hover {
+    background: rgba(255, 255, 255, 0.2);
 }
 
 #start-stop-button {
-    background-color: transparent;
-    border: 0px solid white;
-    color: white;
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    padding: 0;
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
 }
 
-#start-stop-button .icon-play {
-    display: block;
-    width: 0;
-    height: 0;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    border-left: 18px solid white;
-    margin-left: 5px;
+#start-stop-button::before {
+    content: '▶';
+    font-size: 20px;
+    color: white;
+    transform: translateX(2px);
 }
 
-#start-stop-button .icon-pause {
-    display: none;
-    width: 15px;
-    height: 18px;
-    box-sizing: border-box;
-    border-left: 5px solid white;
-    border-right: 5px solid white;
+#start-stop-button.playing::before {
+    content: '❚❚';
+    font-size: 16px;
+    transform: translateX(0);
 }
 
-#start-stop-button.playing {
-    border-color: white;
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-#start-stop-button.playing .icon-play {
-    display: none;
-}
-
-#start-stop-button.playing .icon-pause {
-    display: block;
-    border-color: white;
-}
-
-#intensity-slider {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 95%;
-    height: 12px; /* Track height */
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 10px;
-    outline: none;
-    transition: opacity .2s;
-    cursor: pointer;
-}
-
-#intensity-slider:hover {
-    opacity: 1;
-}
-
-#intensity-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 22px;
-    height: 22px;
-    background: transparent; /* Hide original thumb */
-}
-
-#intensity-slider::-moz-range-thumb {
-    width: 22px;
-    height: 22px;
-    background: transparent; /* Hide original thumb */
-    border: none;
+#raga-name-display {
+    color: white;
+    font-size: 24px;
+    font-weight: 500;
+    font-family: 'Helvetica Neue', sans-serif;
+    /* text-shadow: 1px 1px 3px rgba(0,0,0,0.5); */
+    text-align: center;
+    flex-grow: 1;
 }
 
 #back-button {
-    color: white;
-    background: transparent;
-    border: 0px solid white;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    font-size: 1.2em;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 24px;
+    padding: 5px 12px;
+    position: absolute;
+    left: 20px;
 }
 
-#back-button:hover {
-    background: white;
-}
-
-@media (max-width: 768px) {
-    body.experience-view #logo-container {
-        top: 10px;
-        left: auto;
-        right: 20px;
-        transform: none;
-    }
-
-    body.experience-view #app-logo {
-        width: 30px;
-        height: 30px;
-        padding-top: 60px;
-    }
-
-    .top-bar {
-        left: 20px; /* Revert to original position */
-    }
-}
-
-footer {
-    width: 100%;
-    padding: 1rem;
-    text-align: center;
-    font-size: 0.8rem;
-    color: var(--text-color);
-    opacity: 0.6;
+h1, h2, h3, p {
+    margin: 0;
+    padding: 0;
 }
