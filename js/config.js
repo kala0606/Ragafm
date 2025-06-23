@@ -113,6 +113,58 @@ const hiHatSamples = {
     'A#1': 'samples/drums/Ghosthack-Open_Hihat_01.wav'   // hho
 };
 
+const tablaSamples = {
+    // High, resonant strokes (Na, Tin)
+    'C5': 'samples/TABLA/Tabla_Hit_High_1.wav',
+    'C#5': 'samples/TABLA/Tabla_Hit_High_2.wav',
+    'D5': 'samples/TABLA/Tabla_Hit_High_3.wav',
+    'D#5': 'samples/TABLA/Tabla_Hit_High_4.wav',
+
+    // Sharp, slapping strokes (Ta, Te, Ti)
+    'E5': 'samples/TABLA/Tabla_Slap_1.wav',
+    'F5': 'samples/TABLA/Tabla_Slap_2.wav',
+    'F#5': 'samples/TABLA/Tabla_Slap_3.wav',
+    'G5': 'samples/TABLA/Tabla_Slap_4.wav',
+
+    // Low, bass strokes (Ge)
+    'A5': 'samples/TABLA/Tabla_Low_1.wav',
+    'A#5': 'samples/TABLA/Tabla_Low_2.wav',
+    'B5': 'samples/TABLA/Tabla_Low_3.wav',
+
+    // Mid, full strokes (Dha, Dhin)
+    'C6': 'samples/TABLA/Tabla_Mid_1.wav',
+    'C#6': 'samples/TABLA/Tabla_Mid_2.wav',
+    'D6': 'samples/TABLA/Tabla_Mid_3.wav',
+
+    // Effects
+    'E6': 'samples/TABLA/Tabla_Flare_1.wav',
+    'F6': 'samples/TABLA/Tabla_Ring_1.wav'
+};
+
+const defaultTablaPatterns = {
+    "FastTeenTaal": {
+        "pattern": [
+            'C6', 'E5', 'A5', 'G5', 'C5', 'E5', 'D5', 'G5', 'C6', 'E5', 'A5', 'G5', 'C5', 'E5', 'D5', 'G5',
+            'C#6', 'F5', 'B5', 'G5', 'C5', 'F5', 'D5', 'G5', 'C#6', 'F5', 'B5', 'G5', 'C5', 'F5', 'D5', 'G5'
+        ],
+        "beats": 32
+    },
+    "FastKeherwa": {
+        "pattern": [
+            'C6', 'E5', 'C5', 'E5', 'A5', 'G5', 'C5', 'G5',
+            'C#6', 'F5', 'D5', 'F5', 'B5', 'G5', 'D5', 'G5'
+        ],
+        "beats": 16
+    },
+    "FastDadra": {
+        "pattern": [
+            'C6', 'E5', 'A5', 'C5', 'E5', 'A5',
+            'C#6', 'F5', 'B5', 'C5', 'F5', 'B5'
+        ],
+        "beats": 12
+    }
+};
+
 const complexHiHatPatterns = [
     [1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1], // Shuffled 16ths
     [1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0], // Another shuffle

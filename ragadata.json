@@ -20,7 +20,30 @@
               "avroha": "S' N d P M G r S",
               "pakad": "M d P, G M r S",
               "vadi": "d (Komal Dhaivat)",
-              "samvadi": "r (Komal Rishabh)"
+              "samvadi": "r (Komal Rishabh)",
+              "composition": {
+                "drumPatterns": {},
+                "tablaPatterns": {
+                  "TeenTaal": {
+                    "F2": [1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 1, 1, 0],
+                    "C2": [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0],
+                    "E2": [1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0],
+                    "beats": 16
+                  },
+                  "Keherwa": {
+                    "F2": [1, 0, 0, 0, 0, 0, 1, 0],
+                    "E2": [0, 1, 0, 0, 0, 1, 0, 0],
+                    "C2": [0, 0, 1, 0, 1, 0, 0, 0],
+                    "D2": [0, 0, 0, 1, 0, 0, 0, 0],
+                    "beats": 8
+                  },
+                  "Dadra": {
+                    "F2": [1, 0, 0, 1, 0, 0],
+                    "C2": [0, 1, 1, 0, 1, 1],
+                    "beats": 6
+                  }
+                }
+              }
             },
             {
               "name": "Ahir Bhairav",

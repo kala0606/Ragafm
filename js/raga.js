@@ -87,16 +87,12 @@ function processRagaData() {
                     time_slot: timeSlot.time_slot
                 };
                 
-                // Ensure composition objects exist.
-                if (!processedRaga.composition) {
-                    processedRaga.composition = { sequences: {}, drumPatterns: {} };
-                }
-                if (!processedRaga.composition.sequences) {
-                    processedRaga.composition.sequences = {};
-                }
-                if (!processedRaga.composition.drumPatterns) {
-                    processedRaga.composition.drumPatterns = {};
-                }
+                // Ensure composition objects exist, preserving any existing data.
+                processedRaga.composition = {
+                    sequences: raga.composition?.sequences || {},
+                    drumPatterns: raga.composition?.drumPatterns || {},
+                    tablaPatterns: raga.composition?.tablaPatterns || {}
+                };
 
                 // Populate missing drum patterns by repeating from available ones.
                 const drumPatterns = processedRaga.composition.drumPatterns;
@@ -281,6 +277,7 @@ function refreshComposition() {
     console.log("↻ Refreshing sequence…");
     generateSequence();
     generateDrumPattern();
+    generateTablaPattern();
     barsUntilRefresh = int(random([4, 8, 16]));
     chooseNextChordInterval();
     currentBeat = 0; // Reset the beat counter

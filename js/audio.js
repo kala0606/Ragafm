@@ -75,6 +75,9 @@ function updatePlaybackParameters() {
         if (Object.keys(currentDrumPattern).length === 0) {
             generateDrumPattern();
         }
+        if (Object.keys(currentTablaPattern).length === 0) {
+            generateTablaPattern();
+        }
     }
 }
   
@@ -233,6 +236,42 @@ function playBeat() {
                     } else if (hat_trigger === 2) {
                         hiHatSampler.triggerAttack('A#1'); // Open Hi-hat
                     }
+                }
+            }
+        }
+
+        // --- TABLA SECTION ---
+        if (currentTablaPattern && currentTablaPattern.pattern) {
+            const pattern = currentTablaPattern.pattern;
+            const totalPatternSteps = currentTablaPattern.beats;
+            // The number of sequencer steps in one bar, typically 16 for 4/4 time.
+            const totalSequenceSteps = currentTimeSignature.beats * currentTimeSignature.subdivision;
+
+            // Check if the pattern has a higher resolution than the main sequencer.
+            const stepsPerBeat = Math.round(totalPatternSteps / totalSequenceSteps);
+
+            if (stepsPerBeat > 1) { 
+                // This pattern is faster (e.g., 32nd notes over 16th note sequencer).
+                const interval = beatDuration / currentTimeSignature.subdivision; // Duration of one sequencer step in ms
+                const subStepInterval = (interval / stepsPerBeat) / 1000; // Duration of one tabla note in seconds for Tone.js
+
+                for (let i = 0; i < stepsPerBeat; i++) {
+                    const stepIndex = (currentBeat * stepsPerBeat) + i;
+                    if (stepIndex < pattern.length) {
+                        const noteToPlay = pattern[stepIndex];
+                        if (noteToPlay) {
+                            // Schedule the note within the current sequencer step.
+                            const timeToPlay = Tone.now() + (subStepInterval * i);
+                            tablaSampler.triggerAttack(noteToPlay, timeToPlay);
+                        }
+                    }
+                }
+            } else { 
+                // This pattern runs at the same or a different tempo (polyrhythm), but not at a higher subdivision.
+                const stepIndex = currentBeat % totalPatternSteps;
+                const noteToPlay = pattern[stepIndex];
+                if (noteToPlay) {
+                    tablaSampler.triggerAttack(noteToPlay);
                 }
             }
         }
@@ -398,5 +437,33 @@ function generateDrumPattern() {
     } else {
         console.log('[generateDrumPattern] No base pattern found, using default.');
         currentDrumPattern = createDrumVariation(defaultDrumPattern);
+    }
+}
+
+function generateTablaPattern() {
+    console.log(`[generateTablaPattern] Called for rhythm mode.`);
+    let pattern;
+    let source = "default";
+    let patterns;
+
+    if (currentRaga && currentRaga.composition && currentRaga.composition.tablaPatterns && Object.keys(currentRaga.composition.tablaPatterns).length > 0) {
+        patterns = currentRaga.composition.tablaPatterns;
+        source = "raga";
+    } else {
+        patterns = defaultTablaPatterns;
+    }
+    
+    const patternNames = Object.keys(patterns);
+    if (patternNames.length > 0) {
+        const randomPatternName = random(patternNames);
+        pattern = patterns[randomPatternName];
+        console.log(`[generateTablaPattern] Selected new tabla pattern '${randomPatternName}' from ${source}.`);
+    } else {
+        console.log(`[generateTablaPattern] No tabla patterns found, playing silent.`);
+        pattern = {}; // empty pattern
+    }
+
+    if (pattern) {
+        currentTablaPattern = pattern;
     }
 } 

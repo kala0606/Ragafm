@@ -1,7 +1,7 @@
 // === GLOBAL STATE AND INSTANCES ===
 
 // Audio
-let melodySampler, stringSampler, kotoSampler, chordSampler, drumSampler, hiHatSampler;
+let melodySampler, stringSampler, kotoSampler, chordSampler, drumSampler, hiHatSampler, tablaSampler;
 let reverb, delay, lowPassFilter, hiHatDelay, hiHatReverb;
 let meter;
 let isPlaying = false;
@@ -17,6 +17,7 @@ const allRagas = {};
 let currentRaga;
 let currentSequence = [];
 let currentDrumPattern = {};
+let currentTablaPattern = {};
 let currentTimeSignature = { beats: 4, subdivision: 4 };
 let currentBeat = 0;
 let barCounter = 0;
@@ -76,7 +77,7 @@ function setup() {
   Tone.getDestination().connect(meter);
 
   let samplersLoaded = 0;
-  const totalSamplers = 5;
+  const totalSamplers = 6;
 
   function onSamplerLoad() {
     samplersLoaded++;
@@ -93,17 +94,19 @@ function setup() {
   kotoSampler = new Tone.Sampler(samplesMap, { onload: onSamplerLoad, release: 1, baseUrl: "./" }).chain(lowPassFilter, delay, reverb, Tone.Destination);
   chordSampler = new Tone.Sampler(celloSamplesMap, { onload: onSamplerLoad, release: 4, baseUrl: "./" }).chain(lowPassFilter, delay, reverb, Tone.Destination);
   drumSampler = new Tone.Sampler(drumSamples, { onload: onSamplerLoad, baseUrl: "./" }).toDestination();
+  tablaSampler = new Tone.Sampler(tablaSamples, { onload: onSamplerLoad, baseUrl: "./" }).toDestination();
   
   // Note: hiHatSampler is not counted in totalSamplers as it loads quickly, but for safety, you could include it.
   hiHatSampler = new Tone.Sampler(hiHatSamples, { baseUrl: "./" }).chain(hiHatDelay, hiHatReverb, Tone.Destination);
 
   // Set initial volumes
-  melodySampler.volume.value = -10;
+  melodySampler.volume.value = -6;
   stringSampler.volume.value = -6;
   kotoSampler.volume.value = -10;
-  chordSampler.volume.value = -10;
-  drumSampler.volume.value = -10;
+  chordSampler.volume.value = -7;
+  drumSampler.volume.value = -16;
   hiHatSampler.volume.value = -14;
+  tablaSampler.volume.value = -8;
 
   // Setup UI listeners
   const modeToggleButton = document.getElementById('mode-toggle');
@@ -184,6 +187,7 @@ function toggleMode() {
         currentMode = 'ambient';
         modeToggleButton.classList.remove('rhythm-active');
         currentDrumPattern = {}; // Clear pattern when switching TO ambient mode
+        currentTablaPattern = {}; // Clear pattern when switching TO ambient mode
     }
 
     // If we are already playing, apply the new mode's parameters immediately
