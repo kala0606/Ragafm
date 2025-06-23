@@ -1,3 +1,5 @@
+let experienceStartTime;
+
 function selectRaga(ragaName) {
     if (allRagas[ragaName] && (!currentRaga || currentRaga.name !== ragaName)) {
       // This function can be repurposed for manual selection later if needed.
@@ -69,7 +71,15 @@ function startExperience(ragaName) {
         currentRaga = allRagas[ragaName];
     }
     
+    experienceStartTime = new Date(); // Start the timer
+    
     console.log("▶ Starting Raga:", currentRaga.name);
+
+    // Track the raga selection with Microsoft Clarity
+    if (typeof clarity === 'function') {
+        clarity('set', 'selected_raga', ragaName);
+        clarity('event', 'Raga Selected');
+    }
 
     applyColorScheme(currentRaga.colorScheme);
     applyUIColor(color(255)); // Use white for UI elements
@@ -101,6 +111,13 @@ function startExperience(ragaName) {
 function goToWelcomeScreen() {
     if (isPlaying) {
         togglePlayback(); // This will stop the music and release notes
+    }
+
+    // Track experience duration with Microsoft Clarity
+    if (typeof clarity === 'function' && experienceStartTime) {
+        const durationInSeconds = (new Date() - experienceStartTime) / 1000;
+        clarity('set', 'experience_duration_seconds', Math.round(durationInSeconds).toString());
+        clarity('event', 'Experience Ended');
     }
 
     // Reset state

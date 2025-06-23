@@ -241,37 +241,31 @@ function playBeat() {
         }
 
         // --- TABLA SECTION ---
-        if (currentTablaPattern && currentTablaPattern.pattern) {
+        if (currentTablaPattern && currentTablaPattern.pattern && tablaPlayers.loaded) {
             const pattern = currentTablaPattern.pattern;
             const totalPatternSteps = currentTablaPattern.beats;
-            // The number of sequencer steps in one bar, typically 16 for 4/4 time.
             const totalSequenceSteps = currentTimeSignature.beats * currentTimeSignature.subdivision;
-
-            // Check if the pattern has a higher resolution than the main sequencer.
             const stepsPerBeat = Math.round(totalPatternSteps / totalSequenceSteps);
 
             if (stepsPerBeat > 1) { 
-                // This pattern is faster (e.g., 32nd notes over 16th note sequencer).
-                const interval = beatDuration / currentTimeSignature.subdivision; // Duration of one sequencer step in ms
-                const subStepInterval = (interval / stepsPerBeat) / 1000; // Duration of one tabla note in seconds for Tone.js
+                const interval = beatDuration / currentTimeSignature.subdivision;
+                const subStepInterval = (interval / stepsPerBeat) / 1000;
 
                 for (let i = 0; i < stepsPerBeat; i++) {
                     const stepIndex = (currentBeat * stepsPerBeat) + i;
                     if (stepIndex < pattern.length) {
-                        const noteToPlay = pattern[stepIndex];
-                        if (noteToPlay) {
-                            // Schedule the note within the current sequencer step.
+                        const bolToPlay = pattern[stepIndex];
+                        if (bolToPlay && tablaPlayers.has(bolToPlay)) {
                             const timeToPlay = Tone.now() + (subStepInterval * i);
-                            tablaSampler.triggerAttack(noteToPlay, timeToPlay);
+                            tablaPlayers.player(bolToPlay).start(timeToPlay);
                         }
                     }
                 }
             } else { 
-                // This pattern runs at the same or a different tempo (polyrhythm), but not at a higher subdivision.
                 const stepIndex = currentBeat % totalPatternSteps;
-                const noteToPlay = pattern[stepIndex];
-                if (noteToPlay) {
-                    tablaSampler.triggerAttack(noteToPlay);
+                const bolToPlay = pattern[stepIndex];
+                if (bolToPlay && tablaPlayers.has(bolToPlay)) {
+                    tablaPlayers.player(bolToPlay).start(Tone.now());
                 }
             }
         }
