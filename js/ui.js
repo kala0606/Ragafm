@@ -113,6 +113,11 @@ function goToWelcomeScreen() {
         togglePlayback(); // This will stop the music and release notes
     }
 
+    // Stop all cell loops and dispose resources
+    if (typeof stopAllCellLoops === 'function') {
+        stopAllCellLoops();
+    }
+
     // Track experience duration with Microsoft Clarity
     if (typeof clarity === 'function' && experienceStartTime) {
         const durationInSeconds = (new Date() - experienceStartTime) / 1000;

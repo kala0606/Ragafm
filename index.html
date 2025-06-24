@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>raga.fm</title>
+    <title>Raga.fm : Generative Indian Classical Music</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="logo.svg" type="image/svg+xml">
@@ -15,6 +15,14 @@
     <script src="js/visuals.js"></script>
     <script src="js/ui.js"></script>
     <script src="sketch.js"></script>
+
+    <script type="text/javascript">
+      (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+      })(window, document, "clarity", "script", "s3vrm52esg");
+  </script>
 </head>
 <body>
     <div id="logo-container">
@@ -40,8 +48,9 @@
             <div id="playback-controls">
                 <button id="start-stop-button" class="control-button" aria-label="Start/Stop"></button>
                 <div id="mode-toggle" class="control-button">
-                    <span class="mode-text">Ambient</span>
-                    <span class="mode-text">Rhythm</span>
+                    <span class="mode-text">Amb</span>
+                    <span class="mode-text">Rhy</span>
+                    <span class="mode-text">Int</span>
                     <div class="knob"></div>
                 </div>
             </div>

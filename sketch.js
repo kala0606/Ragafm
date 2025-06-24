@@ -9,7 +9,7 @@ let bpm = 120;
 let beatDuration;
 let playbackLoopTimeout;
 let a = 0; // Perlin noise seed
-let currentMode = 'ambient'; // 'ambient' or 'rhythm'
+let currentMode = 'ambient'; // 'ambient' or 'rhythm' or 'interaction'
 
 // Raga & Compositions
 let ragaData;
@@ -113,7 +113,25 @@ function setup() {
   // Setup UI listeners
   const modeToggleButton = document.getElementById('mode-toggle');
   if (modeToggleButton) {
-    modeToggleButton.addEventListener('click', toggleMode);
+    // Add click listeners to individual mode text spans for direct selection
+    const modeTexts = modeToggleButton.querySelectorAll('.mode-text');
+    modeTexts.forEach((modeText, index) => {
+      modeText.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent event bubbling
+        const targetMode = ['ambient', 'rhythm', 'interaction'][index];
+        console.log(`Direct mode selection: ${targetMode}`);
+        setMode(targetMode);
+      });
+    });
+    
+    // Fallback: if clicking on the button area (not on text), cycle through modes
+    modeToggleButton.addEventListener('click', (e) => {
+      // Only cycle if the click wasn't on a mode text span
+      if (!e.target.classList.contains('mode-text')) {
+        console.log('Mode toggle area clicked - cycling mode');
+        toggleMode();
+      }
+    });
   }
 
   const startStopButton = document.getElementById('start-stop-button');
@@ -179,19 +197,48 @@ function windowResized() {
     createGrid();
 }
 
-function toggleMode() {
+function setMode(targetMode) {
+    if (currentMode === targetMode) {
+        return; // Already in this mode, no change needed
+    }
+    
     const modeToggleButton = document.getElementById('mode-toggle');
-
-    if (currentMode === 'ambient') {
-        currentMode = 'rhythm';
+    
+    // Stop any cell loops when leaving interaction mode
+    if (currentMode === 'interaction' && typeof stopAllCellLoops === 'function') {
+        stopAllCellLoops();
+    }
+    
+    // Remove all mode classes
+    modeToggleButton.classList.remove('rhythm-active', 'interaction-active');
+    
+    // Set the new mode
+    currentMode = targetMode;
+    
+    // Apply the appropriate class and setup
+    if (currentMode === 'rhythm') {
         modeToggleButton.classList.add('rhythm-active');
-        currentDrumPattern = {}; // Clear pattern when switching TO ambient mode
-        currentTablaPattern = {}; // Clear pattern when switching TO ambient mode
-    } else {
-        currentMode = 'ambient';
-        modeToggleButton.classList.remove('rhythm-active');
-        currentDrumPattern = {}; // Clear pattern when switching TO ambient mode
-        currentTablaPattern = {}; // Clear pattern when switching TO ambient mode
+        
+        // Clear patterns when switching TO rhythm mode
+        currentDrumPattern = {};
+        currentTablaPattern = {};
+        
+    } else if (currentMode === 'interaction') {
+        modeToggleButton.classList.add('interaction-active');
+        
+        // Clear drum patterns when switching TO interaction mode
+        currentDrumPattern = {};
+        currentTablaPattern = {};
+        
+    } else { // ambient mode
+        // Clear patterns when switching TO ambient mode
+        currentDrumPattern = {};
+        currentTablaPattern = {};
+    }
+
+    // Setup interactions for the new mode
+    if (typeof setupCellInteractions === 'function') {
+        setupCellInteractions();
     }
 
     // Track mode change with Microsoft Clarity
@@ -207,6 +254,14 @@ function toggleMode() {
         updatePlaybackParameters(); // This will handle the BPM and drum changes
         playbackLoop(); // Start a new loop with the new parameters
     }
+}
+
+// Keep toggleMode for backward compatibility, but now it just cycles through modes
+function toggleMode() {
+    const modes = ['ambient', 'rhythm', 'interaction'];
+    const currentIndex = modes.indexOf(currentMode);
+    const nextIndex = (currentIndex + 1) % modes.length;
+    setMode(modes[nextIndex]);
 }
 
 function resetPlaybackState() {

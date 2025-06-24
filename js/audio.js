@@ -68,7 +68,7 @@ function updatePlaybackParameters() {
         // Variable BPM for ambient mode
         bpm = map(noise(a * 0.02), 0, 1, 20, 200); // Slower, more ambient range
         beatDuration = 60000 / bpm;
-    } else { // 'rhythm' mode
+    } else if (currentMode === 'rhythm') {
         // Fixed BPM for rhythm mode
         bpm = 120;
         beatDuration = 60000 / bpm;
@@ -79,6 +79,13 @@ function updatePlaybackParameters() {
         if (Object.keys(currentTablaPattern).length === 0) {
             generateTablaPattern();
         }
+    } else if (currentMode === 'interaction') {
+        // Fixed BPM for interaction mode (for timing effects)
+        bpm = 90; // Slower BPM for interaction mode
+        beatDuration = 60000 / bpm;
+        // Clear any drum patterns since we only want effects in interaction mode
+        currentDrumPattern = {};
+        currentTablaPattern = {};
     }
 }
   
@@ -128,8 +135,18 @@ function playBeat() {
     updateEffects();
   
     if (!isPlaying) return;
+
+    // In interaction mode, only run effects and timing - no generative melody
+    if (currentMode === 'interaction') {
+        // Just update timing for effects, no note generation
+        currentBeat = (currentBeat + 1) % (currentTimeSignature.beats * currentTimeSignature.subdivision);
+        if (currentBeat === 0) {
+            barCounter++;
+        }
+        return;
+    }
   
-    // choose the note for this subdivision
+    // choose the note for this subdivision (only for ambient and rhythm modes)
     let note, velocity = int(map(noise(a/10),0,1,50,127));
     let slotCount = currentTimeSignature.beats * currentTimeSignature.subdivision;
     let actualDur = beatDuration / currentTimeSignature.subdivision;

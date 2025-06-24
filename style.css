@@ -183,7 +183,7 @@ body.experience-view #app-logo {
 
 .raga-card h3 {
     margin-top: 0;
-    font-size: 1.4em;
+    font-size: 1.2em;
     font-weight: 500;
     color: var(--secondary-color);
 }
@@ -199,14 +199,13 @@ body.experience-view #app-logo {
     position: fixed;
     bottom: 0;
     left: 0;
-    width: 100%;
+    right: 0;
+    z-index: 1000; /* High z-index to ensure it's above canvas */
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 30px;
-    box-sizing: border-box;
-    z-index: 1001;
-    pointer-events: auto;
+    padding: 20px;
+    pointer-events: auto; /* Ensure it can receive clicks */
 }
 
 #playback-controls {
@@ -229,50 +228,80 @@ body.experience-view #app-logo {
 
 #mode-toggle {
     position: relative;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 200px;
-    height: 50px;
-    padding: 0 20px;
+    width: 180px;
+    height: 40px;
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px); /* For Safari */
-    /* border: 1px solid rgba(255, 255, 255, 0.2); */
-    border-radius: 50px;
-    cursor: pointer;
+    border-radius: 20px;
     overflow: hidden;
-    z-index: 0;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
 }
 
 #mode-toggle .mode-text {
-    z-index: 1;
-    font-weight: 500;
-    transition: color 0.4s ease;
+    position: absolute;
+    width: 60px;
+    text-align: center;
+    transition: color 0.3s ease;
+    pointer-events: auto;
+    z-index: 3;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
 }
 
 #mode-toggle .knob {
     position: absolute;
+    width: 60px;
+    height: 36px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 18px;
     top: 2px;
     left: 2px;
-    width: 50%;
-    height: calc(100% - 4px);
-    background: rgba(255, 255, 255, 0.7);
-    border-radius: 50px;
-    transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    z-index: 0;
+    transition: transform 0.3s ease;
+    z-index: 1;
 }
 
-/* Default (Ambient) State - Knob is on the left */
-#mode-toggle .mode-text:nth-child(1) { color: #000; } /* Text under knob is black */
-#mode-toggle .mode-text:nth-child(2) { color: #fff; }
+/* Mode text positioning */
+#mode-toggle .mode-text:nth-child(1) { 
+    left: 0px; 
+    color: #000; /* Text under knob is black */
+}
 
-/* Rhythm Active State - Knob moves to the right */
+#mode-toggle .mode-text:nth-child(2) { 
+    left: 60px; 
+    color: #fff; 
+}
+
+#mode-toggle .mode-text:nth-child(3) { 
+    left: 120px; 
+    color: #fff; 
+}
+
+/* Rhythm mode active */
 #mode-toggle.rhythm-active .knob {
-    left: calc(50% - 2px);
+    transform: translateX(60px);
 }
+
 #mode-toggle.rhythm-active .mode-text:nth-child(1) { color: #fff; }
 #mode-toggle.rhythm-active .mode-text:nth-child(2) { color: #000; } /* Text under knob is black */
+#mode-toggle.rhythm-active .mode-text:nth-child(3) { color: #fff; }
+
+/* Interaction mode active */
+#mode-toggle.interaction-active .knob {
+    transform: translateX(120px);
+}
+
+#mode-toggle.interaction-active .mode-text:nth-child(1) { color: #fff; }
+#mode-toggle.interaction-active .mode-text:nth-child(2) { color: #fff; }
+#mode-toggle.interaction-active .mode-text:nth-child(3) { color: #000; } /* Text under knob is black */
 
 .control-button:hover {
     background: rgba(255, 255, 255, 0.2);
@@ -320,5 +349,5 @@ body.experience-view #app-logo {
 
 h1, h2, h3, p {
     margin: 0;
-    padding: 0;
+    padding-bottom: 10px;
 }
