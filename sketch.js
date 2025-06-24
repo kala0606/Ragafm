@@ -247,6 +247,11 @@ function setMode(targetMode) {
         clarity('event', 'Mode Changed');
     }
 
+    // Notify cast system about mode change
+    if (typeof notifyCastModeChange === 'function') {
+        notifyCastModeChange(currentMode);
+    }
+
     // If we are already playing, apply the new mode's parameters immediately
     if (isPlaying) {
         clearTimeout(playbackLoopTimeout); // Stop the old loop

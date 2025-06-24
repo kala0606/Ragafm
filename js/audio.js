@@ -13,6 +13,11 @@ async function togglePlayback() {
         startStopButton.classList.remove('playing');
     }
   
+    // Notify cast system about playback state change
+    if (typeof notifyCastPlaybackChange === 'function') {
+        notifyCastPlaybackChange(isPlaying);
+    }
+  
     if (isPlaying) {
         refreshComposition();
         updatePlaybackParameters();
