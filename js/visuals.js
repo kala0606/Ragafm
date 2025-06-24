@@ -4,7 +4,7 @@
 let activeCellLoops = new Map(); // cellId -> {pattern: [], isPlaying: boolean, timeoutId: timeoutId}
 
 // Wave Function Collapse Algorithm for generating unique melody patterns
-function generateUniqueMelodyWFC(cellId, ragaData) {
+function generateUniqueMelodyWFC(cellId, ragaData, startingNote) {
     const patternLength = 8; // 8-note patterns
     const pattern = [];
     
@@ -52,11 +52,18 @@ function generateUniqueMelodyWFC(cellId, ragaData) {
         octaveVariations: [-12, 0, 12]
     };
     
-    // Generate pattern using WFC principles
-    let lastNote = null;
+    // Start with the cell's visual note
+    let lastNote = startingNote;
     let seed = parseInt(cellId.replace(/[^0-9]/g, '')) || 0;
     
-    for (let i = 0; i < patternLength; i++) {
+    // First note is always the starting note (what's displayed in the cell)
+    pattern.push({
+        midiNote: startingNote,
+        velocity: Math.floor(70 + ((seed % 100) / 100 * 30)) // Velocity 70-100
+    });
+    
+    // Generate the remaining notes using WFC principles
+    for (let i = 1; i < patternLength; i++) {
         // Use deterministic randomness based on cell position
         const randomSeed = (seed + i * 127) % 1000;
         let rand = (Math.sin(randomSeed) + 1) / 2; // Normalize to 0-1
@@ -105,7 +112,7 @@ function generateUniqueMelodyWFC(cellId, ragaData) {
         lastNote = selectedNote;
     }
     
-    console.log(`Generated pattern for cell ${cellId}:`, pattern);
+    console.log(`Generated pattern for cell ${cellId} starting with note ${startingNote}:`, pattern);
     return pattern;
 }
 
@@ -138,10 +145,13 @@ function addCanvasEventListeners() {
     canvasElement = document.querySelector('canvas');
     if (!canvasElement) return;
     
+    // Add UI protection - make sure UI elements get touch events first
+    addUIProtection();
+    
     canvasElement.addEventListener('mousedown', handleCanvasMouseDown);
     canvasElement.addEventListener('mouseup', handleCanvasMouseUp);
-    canvasElement.addEventListener('touchstart', handleCanvasTouchStart);
-    canvasElement.addEventListener('touchend', handleCanvasTouchEnd);
+    canvasElement.addEventListener('touchstart', handleCanvasTouchStart, { passive: false });
+    canvasElement.addEventListener('touchend', handleCanvasTouchEnd, { passive: false });
     
     domEventListenersAdded = true;
     console.log('Canvas event listeners added');
@@ -155,12 +165,91 @@ function removeCanvasEventListeners() {
     canvasElement.removeEventListener('touchstart', handleCanvasTouchStart);
     canvasElement.removeEventListener('touchend', handleCanvasTouchEnd);
     
+    // Remove UI protection
+    removeUIProtection();
+    
     domEventListenersAdded = false;
     console.log('Canvas event listeners removed');
 }
 
+function addUIProtection() {
+    // Add high-priority touch listeners to UI elements that stop propagation
+    const uiElements = [
+        '#mode-toggle',
+        '#start-stop-button',
+        '#back-button',
+        '.footer-controls',
+        '.top-bar'
+    ];
+    
+    uiElements.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            // Use capture phase to get events before canvas
+            element.addEventListener('touchstart', preventCanvasTouch, { capture: true, passive: false });
+            element.addEventListener('touchend', preventCanvasTouch, { capture: true, passive: false });
+            element.addEventListener('touchmove', preventCanvasTouch, { capture: true, passive: false });
+        }
+    });
+}
+
+function removeUIProtection() {
+    const uiElements = [
+        '#mode-toggle',
+        '#start-stop-button', 
+        '#back-button',
+        '.footer-controls',
+        '.top-bar'
+    ];
+    
+    uiElements.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) {
+            element.removeEventListener('touchstart', preventCanvasTouch, { capture: true });
+            element.removeEventListener('touchend', preventCanvasTouch, { capture: true });
+            element.removeEventListener('touchmove', preventCanvasTouch, { capture: true });
+        }
+    });
+}
+
+function preventCanvasTouch(event) {
+    // Stop the event from reaching canvas
+    event.stopPropagation();
+    console.log('UI touch protected from canvas');
+    // Don't prevent default - let the UI element handle the touch normally
+}
+
+function isEventOnUIElement(clientX, clientY) {
+    // Check if touch/click is on any UI element
+    const elementsToCheck = [
+        '#mode-toggle',
+        '#start-stop-button', 
+        '#back-button',
+        '.top-bar',
+        '.footer-controls',
+        '#playback-controls'
+    ];
+    
+    for (let selector of elementsToCheck) {
+        const element = document.querySelector(selector);
+        if (element) {
+            const rect = element.getBoundingClientRect();
+            if (clientX >= rect.left && clientX <= rect.right && 
+                clientY >= rect.top && clientY <= rect.bottom) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 function handleCanvasMouseDown(event) {
     if (currentMode !== 'interaction' || !currentRaga || !grid || grid.length === 0) return;
+    
+    // Check if click is on UI element - if so, let UI handle it
+    if (isEventOnUIElement(event.clientX, event.clientY)) {
+        return; // Let UI handle this click
+    }
     
     const rect = canvasElement.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -176,6 +265,11 @@ function handleCanvasMouseDown(event) {
 
 function handleCanvasMouseUp(event) {
     if (currentMode !== 'interaction' || !currentRaga || !grid || grid.length === 0) return;
+    
+    // Check if click is on UI element - if so, let UI handle it
+    if (isEventOnUIElement(event.clientX, event.clientY)) {
+        return; // Let UI handle this click
+    }
     
     const rect = canvasElement.getBoundingClientRect();
     const x = event.clientX - rect.left;
@@ -193,9 +287,16 @@ function handleCanvasTouchStart(event) {
     if (currentMode !== 'interaction' || !currentRaga || !grid || grid.length === 0) return;
     
     const rect = canvasElement.getBoundingClientRect();
+    let foundCellTouch = false;
     
     for (let i = 0; i < event.touches.length; i++) {
         const touch = event.touches[i];
+        
+        // Check if touch is on UI element - if so, let UI handle it
+        if (isEventOnUIElement(touch.clientX, touch.clientY)) {
+            continue; // Skip this touch, let UI handle it
+        }
+        
         const x = touch.clientX - rect.left;
         const y = touch.clientY - rect.top;
         
@@ -204,14 +305,34 @@ function handleCanvasTouchStart(event) {
         if (cellInfo) {
             cellInfo.touchId = touch.identifier;
             startCellLoop(cellInfo);
+            foundCellTouch = true;
         }
     }
     
-    event.preventDefault();
+    // Only prevent default if we actually handled a cell touch
+    if (foundCellTouch) {
+        event.preventDefault();
+    }
 }
 
 function handleCanvasTouchEnd(event) {
     if (currentMode !== 'interaction' || !currentRaga || !grid || grid.length === 0) return;
+    
+    // Check if any remaining touches are on UI elements
+    let hasUITouch = false;
+    if (event.touches.length > 0) {
+        for (let i = 0; i < event.touches.length; i++) {
+            if (isEventOnUIElement(event.touches[i].clientX, event.touches[i].clientY)) {
+                hasUITouch = true;
+                break;
+            }
+        }
+    }
+    
+    // If there's a UI touch, don't interfere
+    if (hasUITouch) {
+        return;
+    }
     
     // Stop all loops since we can't easily track which touch ended
     stopAllCellLoops();
@@ -294,8 +415,8 @@ function startCellLoop(cellInfo) {
         Tone.start();
     }
     
-    // Generate unique melody for this cell
-    const pattern = generateUniqueMelodyWFC(cellId, currentRaga);
+    // Generate unique melody for this cell, starting with the cell's visual note
+    const pattern = generateUniqueMelodyWFC(cellId, currentRaga, cellInfo.cell.midiNote);
     
     console.log(`Starting loop for cell ${cellId}`, pattern);
     console.log('MelodySampler state:', {

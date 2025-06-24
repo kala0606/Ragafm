@@ -70,7 +70,7 @@ function updatePlaybackParameters() {
         beatDuration = 60000 / bpm;
     } else if (currentMode === 'rhythm') {
         // Fixed BPM for rhythm mode
-        bpm = 120;
+        bpm = 130;
         beatDuration = 60000 / bpm;
         // Only generate a new drum pattern if we're in rhythm mode and don't have one
         if (Object.keys(currentDrumPattern).length === 0) {
@@ -81,7 +81,7 @@ function updatePlaybackParameters() {
         }
     } else if (currentMode === 'interaction') {
         // Fixed BPM for interaction mode (for timing effects)
-        bpm = 90; // Slower BPM for interaction mode
+        bpm = 130; // Slower BPM for interaction mode
         beatDuration = 60000 / bpm;
         // Clear any drum patterns since we only want effects in interaction mode
         currentDrumPattern = {};
