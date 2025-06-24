@@ -85,11 +85,6 @@ function startExperience(ragaName) {
     applyUIColor(color(255)); // Use white for UI elements
     select('#raga-name-display').html(currentRaga.name);
     
-    // Notify cast system about raga change
-    if (typeof notifyCastRagaChange === 'function') {
-        notifyCastRagaChange(currentRaga);
-    }
-    
     // Generate the color palette for the selected raga
     generateRagaPalette();
 
