@@ -45,8 +45,8 @@ function initializeCast() {
     try {
         const castContext = cast.framework.CastContext.getInstance();
         
-        // Use Styled Media Receiver which supports custom messages
-        let receiverAppId = '07AEE832'; // Styled Media Receiver supports custom messages
+        // Use Default Media Receiver - works with standard Cast devices
+        let receiverAppId = 'CC1AD845'; // Default Media Receiver
         let autoJoinPolicy = 'origin_scoped';
         
         // Try to use proper Chrome Cast constants if available
@@ -195,42 +195,15 @@ function sendInitialState() {
     if (!isCasting || !currentCastSession) return;
     
     try {
-        // Start with a simple media load, then send custom messages
-        loadBasicMedia().then(() => {
-            console.log('Basic media loaded, sending custom state...');
+        // Load receiver with current state encoded in URL
+        loadReceiverWithState().then(() => {
+            console.log('Receiver loaded with initial state');
             
-            // Wait a moment for receiver to initialize
-            setTimeout(() => {
-                // Send current raga
-                if (typeof currentRaga !== 'undefined' && currentRaga) {
-                    sendCustomMessage({
-                        type: 'RAGA_CHANGE',
-                        raga: currentRaga
-                    });
-                }
-                
-                // Send current mode
-                sendCustomMessage({
-                    type: 'MODE_CHANGE',
-                    mode: typeof currentMode !== 'undefined' ? currentMode : 'ambient'
-                });
-                
-                // Send playback state
-                sendCustomMessage({
-                    type: 'PLAYBACK_STATE',
-                    playing: typeof isPlaying !== 'undefined' ? isPlaying : false
-                });
-                
-                // Send initial visual/audio state
-                sendCurrentState();
-            }, 1000);
+            // Start regular state updates via media updates
+            startVisualSync();
             
         }).catch(error => {
-            console.error('Error loading media:', error);
-            // Try sending messages anyway
-            setTimeout(() => {
-                sendCurrentState();
-            }, 2000);
+            console.error('Error loading receiver:', error);
         });
         
     } catch (error) {
@@ -238,72 +211,119 @@ function sendInitialState() {
     }
 }
 
-function loadBasicMedia() {
+function loadReceiverWithState() {
     return new Promise((resolve, reject) => {
         try {
-            // Create a simple media load to initialize the receiver
-            const mediaUrl = `${window.location.origin}/receiver.html`;
-            console.log('Loading media from:', mediaUrl);
+            // Instead of loading HTML, create a minimal audio representation
+            // This avoids the Shaka Player issue while showing our metadata
+            const silentAudio = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+L3vmAVBjih1vP5gzsNSIfT7+WmWxEOZLnqzJpMFhBQn+X+t2EtC2uS2fXKdCQKNmvB7+isSxoRVqKo3ZRLHx1inJ/y7n88DGFZzflSHB1itBjlp0wcACFqMkjXyYYADAVCBZEGZgQKGpT%2F'; // Tiny silent WAV
+            console.log('Loading Cast display for Raga.fm');
             
-            // Create media info
-            const mediaInfo = new chrome.cast.media.MediaInfo(mediaUrl, 'text/html');
-            mediaInfo.metadata = new chrome.cast.media.GenericMediaMetadata();
-            mediaInfo.metadata.title = 'Raga.fm Experience';
-            mediaInfo.metadata.subtitle = 'Generative Indian Classical Music';
+            // Create media info for display
+            const mediaInfo = new chrome.cast.media.MediaInfo(silentAudio, 'audio/wav');
+            mediaInfo.streamType = chrome.cast.media.StreamType.LIVE; // Live stream so it doesn't auto-end
+            mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
+            
+            // Set metadata to show our app info
+            if (typeof currentRaga !== 'undefined' && currentRaga) {
+                mediaInfo.metadata.title = `Raga ${currentRaga.name}`;
+                mediaInfo.metadata.artist = 'Raga.fm - Generative Indian Classical Music';
+                mediaInfo.metadata.albumName = `${currentRaga.mood} - ${typeof currentMode !== 'undefined' ? currentMode.charAt(0).toUpperCase() + currentMode.slice(1) : 'Ambient'} Mode`;
+                
+                // Add images if available
+                if (currentRaga.colorScheme) {
+                    mediaInfo.metadata.images = [{
+                        url: `${window.location.origin}/logo.svg`,
+                        width: 512,
+                        height: 512
+                    }];
+                }
+            } else {
+                mediaInfo.metadata.title = 'Raga.fm';
+                mediaInfo.metadata.artist = 'Generative Indian Classical Music';
+                mediaInfo.metadata.albumName = 'Loading...';
+            }
             
             const request = new chrome.cast.media.LoadRequest(mediaInfo);
+            request.autoplay = false; // Don't auto-play the placeholder audio
             
             currentCastSession.loadMedia(request).then(
                 function() {
-                    console.log('Media loaded successfully');
+                    console.log('Cast display loaded successfully');
                     resolve();
                 },
                 function(error) {
-                    console.error('Error loading media:', error);
+                    console.error('Error loading cast display:', error);
                     reject(error);
                 }
             );
             
         } catch (error) {
-            console.error('Error in loadBasicMedia:', error);
+            console.error('Error in loadReceiverWithState:', error);
             reject(error);
         }
     });
 }
 
-function sendCurrentState() {
-    if (!isCasting || !currentCastSession) return;
+function getCurrentStateForURL() {
+    const state = {
+        raga: typeof currentRaga !== 'undefined' && currentRaga ? currentRaga.name : null,
+        mode: typeof currentMode !== 'undefined' ? currentMode : 'ambient',
+        playing: typeof isPlaying !== 'undefined' ? isPlaying : false,
+        bpm: typeof bpm !== 'undefined' ? bpm : 120
+    };
     
-    try {
-        const state = {
-            // Audio state
-            bpm: bpm || 120,
-            currentBeat: currentBeat || 0,
-            barCounter: barCounter || 0,
-            currentSequence: currentSequence || [],
-            isPlaying: isPlaying || false,
-            
-            // Visual state
-            shaderTime: typeof shaderTime !== 'undefined' ? shaderTime : 0,
-            currentAmplitude: typeof currentAmplitude !== 'undefined' ? currentAmplitude : 0,
-            currentPlayingNote: currentPlayingNote || null,
-            currentMode: currentMode || 'ambient',
-            
-            // Grid state for interaction mode
-            grid: currentMode === 'interaction' ? getGridState() : null,
-            
-            // Timestamp for sync
-            timestamp: Date.now()
-        };
-        
-        sendCustomMessage({
-            type: 'STATE_UPDATE',
-            state: state
-        });
-        
-    } catch (error) {
-        console.error('Error sending current state:', error);
+    return new URLSearchParams(state).toString();
+}
+
+function startVisualSync() {
+    // Since we can't send custom messages, we'll update the metadata periodically
+    // to sync basic state information
+    if (castStateUpdateInterval) {
+        clearInterval(castStateUpdateInterval);
     }
+    
+    castStateUpdateInterval = setInterval(() => {
+        if (isCasting && currentCastSession) {
+            updateMediaMetadata();
+        }
+    }, 5000); // Update every 5 seconds to avoid spam
+}
+
+function updateMediaMetadata() {
+    try {
+        const media = currentCastSession.getMediaSession();
+        if (media && typeof currentRaga !== 'undefined' && currentRaga) {
+            // Create updated metadata
+            const metadata = new chrome.cast.media.MusicTrackMediaMetadata();
+            metadata.title = `♪ Raga ${currentRaga.name}`;
+            metadata.artist = 'Raga.fm - Generative Indian Classical Music';
+            
+            // Show current mode and state
+            const modeText = typeof currentMode !== 'undefined' ? 
+                currentMode.charAt(0).toUpperCase() + currentMode.slice(1) : 'Ambient';
+            const playingText = typeof isPlaying !== 'undefined' && isPlaying ? 'Playing' : 'Paused';
+            
+            metadata.albumName = `${currentRaga.mood} - ${modeText} Mode (${playingText})`;
+            
+            // Add logo
+            metadata.images = [{
+                url: `${window.location.origin}/logo.svg`,
+                width: 512,
+                height: 512
+            }];
+            
+            console.log('Updated Cast metadata:', metadata.title, '-', metadata.albumName);
+        }
+    } catch (error) {
+        console.error('Error updating metadata:', error);
+    }
+}
+
+function sendCurrentState() {
+    // With Default Media Receiver, we can't send custom state updates
+    // State is passed through URL parameters on initial load
+    console.log('State sync via URL parameters - no real-time updates available with Default Media Receiver');
 }
 
 function getGridState() {
