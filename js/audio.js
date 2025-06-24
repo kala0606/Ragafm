@@ -1,11 +1,6 @@
 let lastIntensityLevel;
 
 async function togglePlayback() {
-    // Initialize samplers on first user interaction
-    if (typeof initializeSamplers === 'function' && !audioSystemInitialized) {
-        initializeSamplers();
-    }
-    
     // Use the async nature of Tone.start()
     await Tone.start();
   

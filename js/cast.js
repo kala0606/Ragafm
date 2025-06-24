@@ -328,7 +328,7 @@ function startVisualSync() {
         if (isCasting && currentCastSession) {
             updateMediaMetadata();
         }
-    }, 5000); // Update every 5 seconds to avoid spam
+    }, 10000); // Update every 10 seconds for periodic sync
 }
 
 function updateMediaMetadata() {
@@ -392,24 +392,13 @@ function getGridState() {
 }
 
 function sendCustomMessage(message) {
-    if (!currentCastSession) {
-        console.warn('No cast session available for sending message:', message);
-        return;
-    }
+    // Note: Default Media Receiver doesn't support custom messages
+    // We use metadata updates instead for state synchronization
+    console.log('Custom message would be sent:', message.type, '(using metadata updates instead)');
     
-    try {
-        console.log('Sending custom message:', message.type, message);
-        currentCastSession.sendMessage('urn:x-cast:raga-fm', message).then(
-            function() {
-                console.log('Custom message sent successfully:', message.type);
-            },
-            function(error) {
-                // Custom messages aren't supported by Default Media Receiver - this is expected
-                console.log('Custom message not supported (expected with Default Media Receiver):', message.type);
-            }
-        );
-    } catch (error) {
-        console.error('Error in sendCustomMessage:', error);
+    // Trigger a metadata update instead
+    if (isCasting && currentCastSession) {
+        updateMediaMetadata();
     }
 }
 
@@ -450,30 +439,27 @@ function hideCastButton() {
 // Notify cast when raga changes
 function notifyCastRagaChange(raga) {
     if (isCasting && currentCastSession) {
-        sendCustomMessage({
-            type: 'RAGA_CHANGE',
-            raga: raga
-        });
+        console.log('Cast: Raga changed to', raga.name);
+        // Update metadata immediately to reflect the change
+        updateMediaMetadata();
     }
 }
 
 // Notify cast when mode changes
 function notifyCastModeChange(mode) {
     if (isCasting && currentCastSession) {
-        sendCustomMessage({
-            type: 'MODE_CHANGE',
-            mode: mode
-        });
+        console.log('Cast: Mode changed to', mode);
+        // Update metadata immediately to reflect the change
+        updateMediaMetadata();
     }
 }
 
 // Notify cast when playback state changes
 function notifyCastPlaybackChange(playing) {
     if (isCasting && currentCastSession) {
-        sendCustomMessage({
-            type: 'PLAYBACK_STATE',
-            playing: playing
-        });
+        console.log('Cast: Playback state changed to', playing ? 'playing' : 'paused');
+        // Update metadata immediately to reflect the change
+        updateMediaMetadata();
     }
 }
 
