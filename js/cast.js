@@ -7,6 +7,14 @@ let currentCastSession = null;
 let isCasting = false;
 let castStateUpdateInterval = null;
 
+// Audio streaming variables
+let audioStreamingActive = false;
+let mediaRecorder = null;
+let audioStream = null;
+let currentMediaUrl = null;
+let audioChunks = [];
+let streamingInterval = null;
+
 // Wait for Cast SDK to be available
 function waitForCastSDK(callback, attempts = 0) {
     const maxAttempts = 20; // 10 seconds max wait time
@@ -168,8 +176,11 @@ function onCastStateChanged(event) {
                 // Show cast button when devices are available
                 showCastButton();
                 
-                // Stop state updates
+                // Stop state updates and audio capture
                 stopStateUpdates();
+                if (audioStreamingActive) {
+                    stopAudioCapture();
+                }
                 
                 break;
                 
@@ -255,55 +266,186 @@ function loadReceiverWithState() {
                 return;
             }
             
-            // Instead of loading HTML, create a minimal audio representation
-            // This avoids the Shaka Player issue while showing our metadata
-            const silentAudio = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+L3vmAVBjih1vP5gzsNSIfT7+WmWxEOZLnqzJpMFhBQn+X+t2EtC2uS2fXKdCQKNmvB7+isSxoRVqKo3ZRLHx1inJ/y7n88DGFZzflSHB1itBjlp0wcACFqMkjXyYYADAVCBZEGZgQKGpT%2F'; // Tiny silent WAV
-            console.log('Loading Cast display for Raga.fm');
+            console.log('Loading Cast with real audio streaming...');
             
-            // Create media info for display
-            const mediaInfo = new chrome.cast.media.MediaInfo(silentAudio, 'audio/wav');
-            mediaInfo.streamType = chrome.cast.media.StreamType.LIVE; // Live stream so it doesn't auto-end
-            mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
-            
-            // Set metadata to show our app info
-            if (typeof currentRaga !== 'undefined' && currentRaga) {
-                mediaInfo.metadata.title = `Raga ${currentRaga.name}`;
-                mediaInfo.metadata.artist = 'Raga.fm - Generative Indian Classical Music';
-                mediaInfo.metadata.albumName = `${currentRaga.mood} - ${typeof currentMode !== 'undefined' ? currentMode.charAt(0).toUpperCase() + currentMode.slice(1) : 'Ambient'} Mode`;
+            // Start audio capture and streaming
+            startAudioCapture().then(audioUrl => {
+                // Create media info with real audio stream
+                const mediaInfo = new chrome.cast.media.MediaInfo(audioUrl, 'audio/webm');
+                mediaInfo.streamType = chrome.cast.media.StreamType.LIVE;
+                mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
                 
-                // Add images if available
-                if (currentRaga.colorScheme) {
+                // Set metadata to show our app info
+                if (typeof currentRaga !== 'undefined' && currentRaga) {
+                    mediaInfo.metadata.title = `♪ Raga ${currentRaga.name}`;
+                    mediaInfo.metadata.artist = 'Raga.fm - Generative Indian Classical Music';
+                    mediaInfo.metadata.albumName = `${currentRaga.mood} - ${typeof currentMode !== 'undefined' ? currentMode.charAt(0).toUpperCase() + currentMode.slice(1) : 'Ambient'} Mode`;
+                    
+                    // Add images if available
                     mediaInfo.metadata.images = [{
                         url: `${window.location.origin}/logo.svg`,
                         width: 512,
                         height: 512
                     }];
+                } else {
+                    mediaInfo.metadata.title = 'Raga.fm';
+                    mediaInfo.metadata.artist = 'Generative Indian Classical Music';
+                    mediaInfo.metadata.albumName = 'Loading...';
                 }
-            } else {
-                mediaInfo.metadata.title = 'Raga.fm';
-                mediaInfo.metadata.artist = 'Generative Indian Classical Music';
-                mediaInfo.metadata.albumName = 'Loading...';
-            }
-            
-            const request = new chrome.cast.media.LoadRequest(mediaInfo);
-            request.autoplay = false; // Don't auto-play the placeholder audio
-            
-            currentCastSession.loadMedia(request).then(
-                function() {
-                    console.log('Cast display loaded successfully');
-                    resolve();
-                },
-                function(error) {
-                    console.error('Error loading cast display:', error);
-                    reject(error);
-                }
-            );
+                
+                const request = new chrome.cast.media.LoadRequest(mediaInfo);
+                request.autoplay = true; // Auto-play the real audio stream
+                
+                currentCastSession.loadMedia(request).then(
+                    function() {
+                        console.log('Cast audio stream loaded successfully');
+                        audioStreamingActive = true;
+                        resolve();
+                    },
+                    function(error) {
+                        console.error('Error loading cast audio stream:', error);
+                        reject(error);
+                    }
+                );
+                
+            }).catch(error => {
+                console.error('Error capturing audio:', error);
+                reject(error);
+            });
             
         } catch (error) {
             console.error('Error in loadReceiverWithState:', error);
             reject(error);
         }
     });
+}
+
+// Audio capture and streaming functions
+async function startAudioCapture() {
+    try {
+        console.log('Starting audio capture for Cast streaming...');
+        
+        // Get the audio context from Tone.js
+        if (!Tone.context || !Tone.context.destination) {
+            throw new Error('Tone.js audio context not available');
+        }
+        
+        // Create a MediaStreamDestination to capture Tone.js output
+        const dest = Tone.context.createMediaStreamDestination();
+        
+        // Connect Tone.js master output to our capture destination
+        Tone.getDestination().connect(dest);
+        
+        audioStream = dest.stream;
+        
+        // Set up MediaRecorder to create audio chunks
+        const options = {
+            mimeType: 'audio/webm;codecs=opus',
+            audioBitsPerSecond: 128000
+        };
+        
+        mediaRecorder = new MediaRecorder(audioStream, options);
+        audioChunks = [];
+        
+        mediaRecorder.ondataavailable = (event) => {
+            if (event.data.size > 0) {
+                audioChunks.push(event.data);
+            }
+        };
+        
+        mediaRecorder.onstop = () => {
+            console.log('Audio recording stopped');
+        };
+        
+        // Start recording in chunks
+        mediaRecorder.start(1000); // Record in 1-second chunks
+        
+        // Create a blob URL for the stream
+        return new Promise((resolve, reject) => {
+            // For live streaming, we need to create a blob URL that updates
+            // This is a simplified approach - in production you'd use a streaming server
+            setTimeout(() => {
+                if (audioChunks.length > 0) {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    currentMediaUrl = URL.createObjectURL(audioBlob);
+                    console.log('Audio capture started, blob URL created:', currentMediaUrl);
+                    resolve(currentMediaUrl);
+                } else {
+                    // Fallback to a simple audio stream
+                    const streamUrl = createAudioStreamUrl();
+                    resolve(streamUrl);
+                }
+            }, 2000); // Wait 2 seconds to collect some audio data
+        });
+        
+    } catch (error) {
+        console.error('Error starting audio capture:', error);
+        throw error;
+    }
+}
+
+function createAudioStreamUrl() {
+    // Create a simple audio stream URL
+    // In a real implementation, this would be a server endpoint
+    // For now, we'll create a data URL with continuous audio
+    
+    console.log('Creating fallback audio stream...');
+    
+    // Generate a longer silent audio file that loops
+    const sampleRate = 44100;
+    const duration = 10; // 10 seconds
+    const numSamples = sampleRate * duration;
+    const buffer = new ArrayBuffer(44 + numSamples * 2);
+    const view = new DataView(buffer);
+    
+    // WAV header
+    const writeString = (offset, string) => {
+        for (let i = 0; i < string.length; i++) {
+            view.setUint8(offset + i, string.charCodeAt(i));
+        }
+    };
+    
+    writeString(0, 'RIFF');
+    view.setUint32(4, 36 + numSamples * 2, true);
+    writeString(8, 'WAVE');
+    writeString(12, 'fmt ');
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true);
+    view.setUint16(22, 1, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, sampleRate * 2, true);
+    view.setUint16(32, 2, true);
+    view.setUint16(34, 16, true);
+    writeString(36, 'data');
+    view.setUint32(40, numSamples * 2, true);
+    
+    // Generate audio data (simple tone for testing)
+    for (let i = 0; i < numSamples; i++) {
+        const sample = Math.sin(2 * Math.PI * 440 * i / sampleRate) * 0.1; // Quiet 440Hz tone
+        view.setInt16(44 + i * 2, sample * 32767, true);
+    }
+    
+    const blob = new Blob([buffer], { type: 'audio/wav' });
+    return URL.createObjectURL(blob);
+}
+
+function stopAudioCapture() {
+    if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+    }
+    
+    if (audioStream) {
+        audioStream.getTracks().forEach(track => track.stop());
+        audioStream = null;
+    }
+    
+    if (currentMediaUrl) {
+        URL.revokeObjectURL(currentMediaUrl);
+        currentMediaUrl = null;
+    }
+    
+    audioStreamingActive = false;
+    console.log('Audio capture stopped');
 }
 
 function getCurrentStateForURL() {
@@ -471,6 +613,11 @@ function stopCasting() {
         } catch (error) {
             console.error('Error ending cast session:', error);
         }
+    }
+    
+    // Stop audio capture when casting ends
+    if (audioStreamingActive) {
+        stopAudioCapture();
     }
 }
 
