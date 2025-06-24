@@ -26,57 +26,22 @@ function waitForCastSDK(callback, attempts = 0) {
         });
     }
     
-    // Need both cast.framework AND chrome.cast for full functionality
-    if (castFrameworkAvailable && chromeCastAvailable) {
-        console.log('Cast SDK fully loaded, initializing...');
+    if (castFrameworkAvailable) {
+        console.log('Cast framework detected, initializing...');
         callback();
     } else if (attempts < maxAttempts) {
-        console.log(`Cast SDK not fully ready, waiting... (${attempts + 1}/${maxAttempts})`);
+        console.log(`Cast SDK not ready, waiting... (${attempts + 1}/${maxAttempts})`);
         setTimeout(() => waitForCastSDK(callback, attempts + 1), 500);
     } else {
-        console.warn('Cast SDK failed to load completely.');
-        
-        if (castFrameworkAvailable && !chromeCastAvailable) {
-            console.log('Cast framework loaded but chrome.cast is missing.');
-            console.log('This usually means the Google Cast extension is not installed or the site is not HTTPS.');
-            console.log('Please ensure:');
-            console.log('1. Site is served over HTTPS');
-            console.log('2. Google Cast extension is installed');
-            console.log('3. Cast devices are on the same network');
-        }
-        
-        // Hide cast button since Cast won't work properly
+        console.warn('Cast SDK failed to load. This is normal in development or if Google Cast extension is not installed.');
+        console.log('Cast functionality will be disabled.');
+        // Hide cast button since Cast won't work
         hideCastButton();
     }
 }
 
 // Initialize Cast functionality
 function initializeCast() {
-    // Check if we're in localhost development
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        console.log('Development mode detected - Cast functionality will show mock behavior');
-        showCastButton();
-        setupMockCastButton();
-        return;
-    }
-
-    // Verify all required APIs are available
-    if (!window.cast || !cast.framework) {
-        console.error('cast.framework not available');
-        hideCastButton();
-        return;
-    }
-
-    if (!window.chrome || !chrome.cast) {
-        console.error('chrome.cast not available - Google Cast extension may not be installed or site is not HTTPS');
-        console.log('Please ensure:');
-        console.log('1. Site is served over HTTPS');
-        console.log('2. Google Cast extension is installed in Chrome');
-        console.log('3. Cast devices are on the same network');
-        hideCastButton();
-        return;
-    }
-
     try {
         const castContext = cast.framework.CastContext.getInstance();
         
@@ -476,21 +441,20 @@ function stopCasting() {
 }
 
 // Development mode cast functionality
-function setupMockCastButton() {
-    const castButton = document.getElementById('cast-button');
-    if (castButton) {
-        castButton.addEventListener('click', () => {
-            alert('Cast functionality is in development mode.\n\nTo test with real Cast devices:\n1. Serve this site over HTTPS\n2. Ensure Google Cast extension is installed\n3. Have Cast devices on same network\n4. The Cast button will appear automatically when devices are detected');
-        });
-    }
-}
-
 function enableDevelopmentCast() {
     console.log('Enabling development cast mode (no actual casting)');
     
     // Show cast button for testing UI
     showCastButton();
-    setupMockCastButton();
+    
+    // Add click handler for development
+    const castButton = document.getElementById('cast-button');
+    if (castButton) {
+        castButton.addEventListener('click', () => {
+            console.log('Development cast button clicked');
+            alert('Cast functionality is not available in development mode.\n\nTo test casting:\n1. Deploy to HTTPS server\n2. Install Google Cast extension\n3. Ensure Cast devices are on network');
+        });
+    }
 }
 
 // Initialize Cast SDK when ready
