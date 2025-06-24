@@ -404,7 +404,8 @@ function sendCustomMessage(message) {
                 console.log('Custom message sent successfully:', message.type);
             },
             function(error) {
-                console.error('Error sending custom message:', message.type, error);
+                // Custom messages aren't supported by Default Media Receiver - this is expected
+                console.log('Custom message not supported (expected with Default Media Receiver):', message.type);
             }
         );
     } catch (error) {

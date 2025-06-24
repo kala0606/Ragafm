@@ -58,24 +58,29 @@ function preload() {
   hindiFont = loadFont('fonts/ome_bhatkhande_hindi.ttf');
 }
 
-function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
-  
-  // Initialize text canvas
-  textCanvas = createGraphics(windowWidth, windowHeight);
-  textCanvas.textFont(hindiFont);
+let audioSystemInitialized = false;
 
-  // Initialize Audio
-  // Tone.setContext(getAudioContext());
-
+function initializeAudioSystem() {
+  // Create audio effects chain without triggering AudioContext
   reverb = new Tone.Reverb({ decay: 4, wet: 0.7 });
   delay = new Tone.FeedbackDelay({ delayTime: "8n", feedback: 0.5, wet: 0.5 });
   hiHatDelay = new Tone.FeedbackDelay({ delayTime: "16n", feedback: 0.3, wet: 0 });
   hiHatReverb = new Tone.Reverb({ decay: 1.5, wet: 0 });
   lowPassFilter = new Tone.Filter({ frequency: 2000, type: 'lowpass', Q: 1 });
   meter = new Tone.Meter();
-  Tone.getDestination().connect(meter);
+  
+  try {
+    Tone.getDestination().connect(meter);
+  } catch (error) {
+    console.log('AudioContext not ready yet, will connect meter later');
+  }
+}
 
+function initializeSamplers() {
+  if (audioSystemInitialized) return;
+  
+  console.log('Initializing audio samplers after user interaction...');
+  
   let samplersLoaded = 0;
   const totalSamplers = 6;
 
@@ -84,8 +89,7 @@ function setup() {
     if (samplersLoaded === totalSamplers) {
       console.log("All samplers loaded.");
       assetsLoaded = true;
-      // Now that everything is loaded, process raga data and populate the UI
-      processRagaData();
+      // Samplers are now ready - raga data was already processed during setup
     }
   }
 
@@ -109,6 +113,33 @@ function setup() {
   drumSampler.volume.value = -16;
   hiHatSampler.volume.value = -14;
   tablaPlayers.volume.value = -2;
+  
+  // Connect meter now that AudioContext is ready
+  try {
+    Tone.getDestination().connect(meter);
+  } catch (error) {
+    console.log('Could not connect meter:', error);
+  }
+  
+  audioSystemInitialized = true;
+}
+
+function setup() {
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  
+  // Initialize text canvas
+  textCanvas = createGraphics(windowWidth, windowHeight);
+  textCanvas.textFont(hindiFont);
+
+  // Initialize Audio (defer sampler creation until first user interaction)
+  // Tone.setContext(getAudioContext());
+
+  // Initialize audio processing chain first (these don't require AudioContext)
+  initializeAudioSystem();
+  
+  // Process raga data immediately for welcome screen
+  // Samplers will be initialized on first user interaction
+  processRagaData();
 
   // Setup UI listeners
   const modeToggleButton = document.getElementById('mode-toggle');

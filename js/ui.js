@@ -58,6 +58,11 @@ function applyColorScheme(scheme) {
 }
 
 function startExperience(ragaName) {
+    // Initialize samplers on first user interaction (raga selection)
+    if (typeof initializeSamplers === 'function' && !audioSystemInitialized) {
+        initializeSamplers();
+    }
+    
     if (!allRagas[ragaName]) {
         console.error("Selected raga not found:", ragaName);
         // Fallback to the very first raga if the provided one is invalid
