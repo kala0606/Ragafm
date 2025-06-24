@@ -241,23 +241,23 @@ function mouseReleased(event) {
 }
 
 function touchStarted() {
-    // Only disable p5.js touch handling when specifically in interaction mode
+    // Only handle touches when specifically in interaction mode with a raga selected
     if (currentMode === 'interaction' && currentRaga) {
-        return false; // Let DOM handlers handle this
+        return false; // Let DOM handlers handle this and prevent default
     }
     
-    // Normal p5.js functionality for welcome screen and other modes
-    return false; // Prevent default behavior
+    // For welcome screen and other modes, allow normal touch behavior
+    // Don't return false - this allows scrolling and normal touch interactions
 }
 
 function touchEnded() {
-    // Only disable p5.js touch handling when specifically in interaction mode
+    // Only handle touches when specifically in interaction mode with a raga selected
     if (currentMode === 'interaction' && currentRaga) {
-        return false; // Let DOM handlers handle this
+        return false; // Let DOM handlers handle this and prevent default
     }
     
-    // Normal p5.js functionality for welcome screen and other modes
-    return false; // Prevent default behavior
+    // For welcome screen and other modes, allow normal touch behavior
+    // Don't return false - this allows scrolling and normal touch interactions
 }
 
 function getCellFromCoordinates(x, y) {
