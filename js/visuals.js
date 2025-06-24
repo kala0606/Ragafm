@@ -5,7 +5,27 @@ let activeCellLoops = new Map(); // cellId -> {pattern: [], isPlaying: boolean, 
 
 // Wave Function Collapse Algorithm for generating unique melody patterns
 function generateUniqueMelodyWFC(cellId, ragaData, startingNote) {
-    const patternLength = 8; // 8-note patterns
+    // Determine time signature based on cell position
+    const seed = parseInt(cellId.replace(/[^0-9]/g, '')) || 0;
+    
+    // Possible time signatures for variety (numerator/8)
+    const possibleTimeSignatures = [
+        { beats: 2, subdivision: 8 },  // 2/8 - Quick, binary
+        { beats: 3, subdivision: 8 },  // 3/8 - Waltz-like
+        { beats: 4, subdivision: 8 },  // 4/8 - Standard
+        { beats: 5, subdivision: 8 },  // 5/8 - Asymmetrical
+        { beats: 7, subdivision: 8 },  // 7/8 - Complex
+        { beats: 8, subdivision: 8 }   // 8/8 - Extended
+    ];
+    
+    const sigIndex = seed % possibleTimeSignatures.length;
+    const timeSignature = possibleTimeSignatures[sigIndex];
+    
+    // Pattern length equals the number of beats (since we're working in 8th notes)
+    const patternLength = timeSignature.beats;
+    
+    console.log(`Cell ${cellId}: ${timeSignature.beats}/8 time signature, ${patternLength} notes`);
+    
     const pattern = [];
     
     // Available notes from raga (weighted by importance)
@@ -46,20 +66,22 @@ function generateUniqueMelodyWFC(cellId, ragaData, startingNote) {
     const constraints = {
         // Melodic intervals (prefer steps and consonant intervals)
         allowedIntervals: [1, 2, 3, 4, 5, 7, 8, 12], // semitones
-        // Rest probability increases pattern variety
-        restProbability: 0.15,
+        // Rest probability varies by time signature complexity
+        restProbability: timeSignature.beats <= 3 ? 0.1 : // Simple meters: fewer rests
+                        timeSignature.beats <= 5 ? 0.15 : // Medium meters: some rests  
+                        0.2, // Complex meters: more rests for clarity
         // Octave variations
         octaveVariations: [-12, 0, 12]
     };
     
     // Start with the cell's visual note
     let lastNote = startingNote;
-    let seed = parseInt(cellId.replace(/[^0-9]/g, '')) || 0;
     
     // First note is always the starting note (what's displayed in the cell)
     pattern.push({
         midiNote: startingNote,
-        velocity: Math.floor(70 + ((seed % 100) / 100 * 30)) // Velocity 70-100
+        velocity: Math.floor(70 + ((seed % 100) / 100 * 30)), // Velocity 70-100
+        timeSignature: timeSignature // Store time signature with the pattern
     });
     
     // Generate the remaining notes using WFC principles
@@ -68,14 +90,24 @@ function generateUniqueMelodyWFC(cellId, ragaData, startingNote) {
         const randomSeed = (seed + i * 127) % 1000;
         let rand = (Math.sin(randomSeed) + 1) / 2; // Normalize to 0-1
         
-        // Rest probability
+        // Rest probability (adjusted for time signature complexity)
         if (rand < constraints.restProbability) {
             pattern.push(null);
             continue;
         }
         
+        // Add rhythmic considerations based on time signature
+        const isFirstBeat = i === 0;
+        const isStrongBeat = (timeSignature.beats >= 4) && (i % 2 === 0); // Emphasize even beats in longer meters
+        const isLastBeat = i === (patternLength - 1);
+        
         // Select note with constraints
         let candidateNotes = [...weightedNotes];
+        
+        // Favor important notes on strong beats in complex time signatures
+        if ((isFirstBeat || isStrongBeat || isLastBeat) && timeSignature.beats >= 5) {
+            candidateNotes.push(ragaData.vadi, ragaData.samavadi);
+        }
         
         // Apply melodic interval constraints if we have a previous note
         if (lastNote !== null) {
@@ -94,9 +126,10 @@ function generateUniqueMelodyWFC(cellId, ragaData, startingNote) {
         const noteIndex = Math.floor(rand * candidateNotes.length);
         let selectedNote = candidateNotes[noteIndex];
         
-        // Add octave variation based on position
+        // Add octave variation based on position (more variation in complex meters)
         const octaveRand = ((seed + i * 73) % 100) / 100;
-        if (octaveRand < 0.2) {
+        const octaveChance = timeSignature.beats >= 7 ? 0.25 : 0.15; // More variation in complex meters
+        if (octaveRand < octaveChance) {
             const octaveShift = constraints.octaveVariations[Math.floor(octaveRand * 10) % constraints.octaveVariations.length];
             selectedNote += octaveShift;
         }
@@ -112,7 +145,10 @@ function generateUniqueMelodyWFC(cellId, ragaData, startingNote) {
         lastNote = selectedNote;
     }
     
-    console.log(`Generated pattern for cell ${cellId} starting with note ${startingNote}:`, pattern);
+    // Store the time signature info with the pattern
+    pattern.timeSignature = timeSignature;
+    
+    console.log(`Generated ${timeSignature.beats}/8 pattern for cell ${cellId} starting with note ${startingNote}:`, pattern);
     return pattern;
 }
 
@@ -436,7 +472,12 @@ function startCellLoop(cellInfo) {
     
     // Create a simple looping system using setTimeout instead of Tone.Sequence
     let currentStep = 0;
-    const stepDuration = 250; // 250ms per step (8th notes at ~120 BPM)
+    
+    // Calculate step duration based on the pattern's time signature
+    // Base timing: 120 BPM = 500ms per quarter note = 250ms per 8th note
+    const baseBPM = 120;
+    const eighthNoteDuration = (60000 / baseBPM) / 2; // 250ms at 120 BPM
+    const stepDuration = eighthNoteDuration; // Each step is an 8th note
     
     function playStep() {
         const loopData = activeCellLoops.get(cellId);
@@ -461,7 +502,7 @@ function startCellLoop(cellInfo) {
         // Move to next step
         currentStep = (currentStep + 1) % pattern.length;
         
-        // Schedule next step
+        // Schedule next step based on the pattern's time signature
         if (loopData && loopData.isPlaying) {
             loopData.timeoutId = setTimeout(playStep, stepDuration);
         }
