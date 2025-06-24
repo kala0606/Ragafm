@@ -9,7 +9,7 @@ let castStateUpdateInterval = null;
 
 // Wait for Cast SDK to be available
 function waitForCastSDK(callback, attempts = 0) {
-    const maxAttempts = 10; // 5 seconds max wait time
+    const maxAttempts = 20; // 10 seconds max wait time
     
     // Check what's actually available
     const castFrameworkAvailable = typeof cast !== 'undefined' && cast.framework;
@@ -22,36 +22,33 @@ function waitForCastSDK(callback, attempts = 0) {
             castFramework: castFrameworkAvailable,
             chrome: chromeAvailable,
             chromeCast: chromeCastAvailable,
-            chromeMedia: chromeMediaAvailable
+            chromeMedia: chromeMediaAvailable,
+            window_cast: typeof window.cast,
+            window_chrome: typeof window.chrome
         });
     }
     
-    // Need both cast.framework AND chrome.cast for full functionality
-    if (castFrameworkAvailable && chromeCastAvailable) {
-        console.log('Cast SDK fully loaded, initializing...');
+    // Try with just cast.framework first - chrome.cast might load later
+    if (castFrameworkAvailable) {
+        console.log('Cast framework available, attempting initialization...');
         callback();
     } else if (attempts < maxAttempts) {
-        console.log(`Cast SDK not fully ready, waiting... (${attempts + 1}/${maxAttempts})`);
+        console.log(`Cast SDK not ready, waiting... (${attempts + 1}/${maxAttempts})`);
         setTimeout(() => waitForCastSDK(callback, attempts + 1), 500);
     } else {
-        console.warn('Cast SDK failed to load completely.');
+        console.warn('Cast SDK failed to load after', maxAttempts, 'attempts');
+        console.log('This is normal in development or if Google Cast is not available.');
         
-        if (castFrameworkAvailable && !chromeCastAvailable) {
-            console.log('Cast framework loaded but chrome.cast is missing.');
-            console.log('This usually means the Google Cast extension is not installed or the site is not HTTPS.');
-            console.log('Please ensure:');
-            console.log('1. Site is served over HTTPS');
-            console.log('2. Google Cast extension is installed');
-            console.log('3. Cast devices are on the same network');
-        }
-        
-        // Hide cast button since Cast won't work properly
-        hideCastButton();
+        // Try enabling development mode instead of hiding
+        console.log('Falling back to development mode...');
+        enableDevelopmentCast();
     }
 }
 
 // Initialize Cast functionality
 function initializeCast() {
+    console.log('Initializing Cast framework...');
+    
     // Check if we're in localhost development
     if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
         console.log('Development mode detected - Cast functionality will show mock behavior');
@@ -60,20 +57,11 @@ function initializeCast() {
         return;
     }
 
-    // Verify all required APIs are available
+    // Verify cast.framework is available
     if (!window.cast || !cast.framework) {
         console.error('cast.framework not available');
-        hideCastButton();
-        return;
-    }
-
-    if (!window.chrome || !chrome.cast) {
-        console.error('chrome.cast not available - Google Cast extension may not be installed or site is not HTTPS');
-        console.log('Please ensure:');
-        console.log('1. Site is served over HTTPS');
-        console.log('2. Google Cast extension is installed in Chrome');
-        console.log('3. Cast devices are on the same network');
-        hideCastButton();
+        console.log('Falling back to development mode...');
+        enableDevelopmentCast();
         return;
     }
 
@@ -137,6 +125,17 @@ function initializeCast() {
         
     } catch (error) {
         console.error('Error initializing Cast:', error);
+        console.log('Available APIs:', {
+            cast: typeof window.cast,
+            castFramework: typeof window.cast?.framework,
+            chrome: typeof window.chrome,
+            chromeCast: typeof window.chrome?.cast,
+            chromeCastMedia: typeof window.chrome?.cast?.media
+        });
+        
+        // Fall back to development mode
+        console.log('Falling back to development mode due to initialization error...');
+        enableDevelopmentCast();
     }
 }
 
@@ -249,6 +248,13 @@ function sendInitialState() {
 function loadReceiverWithState() {
     return new Promise((resolve, reject) => {
         try {
+            // Check if chrome.cast.media is available
+            if (!window.chrome || !chrome.cast || !chrome.cast.media) {
+                console.warn('chrome.cast.media not available, skipping media load');
+                resolve();
+                return;
+            }
+            
             // Instead of loading HTML, create a minimal audio representation
             // This avoids the Shaka Player issue while showing our metadata
             const silentAudio = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+L3vmAVBjih1vP5gzsNSIfT7+WmWxEOZLnqzJpMFhBQn+X+t2EtC2uS2fXKdCQKNmvB7+isSxoRVqKo3ZRLHx1inJ/y7n88DGFZzflSHB1itBjlp0wcACFqMkjXyYYADAVCBZEGZgQKGpT%2F'; // Tiny silent WAV
@@ -327,6 +333,12 @@ function startVisualSync() {
 
 function updateMediaMetadata() {
     try {
+        // Check if chrome.cast.media is available
+        if (!window.chrome || !chrome.cast || !chrome.cast.media) {
+            console.warn('chrome.cast.media not available for metadata update');
+            return;
+        }
+        
         const media = currentCastSession.getMediaSession();
         if (media && typeof currentRaga !== 'undefined' && currentRaga) {
             // Create updated metadata
