@@ -14,6 +14,7 @@ async function togglePlayback() {
     }
   
     if (isPlaying) {
+        refreshComposition();
         updatePlaybackParameters();
         playbackLoop();
         try {
@@ -283,14 +284,17 @@ function playBeat() {
       lightUpNote(note, durationMs);
   
       // Always play cello for the melodic line
-      chordSampler.triggerAttackRelease(noteName, "1n", undefined, normalizedVelocity);
+      // chordSampler.triggerAttackRelease(noteName, "1n", undefined, normalizedVelocity);
+      stringSampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
   
       if (fastRhythmEvent) {
         kotoSampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
       } else {
         melodySampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
         if (!isJhala) {
-          stringSampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
+          
+          melodySampler.triggerAttackRelease(noteName, duration, undefined, normalizedVelocity);
+
         }
       }
     }
@@ -363,11 +367,17 @@ function playBeat() {
 }
 
 function playChord(rootNote, velocity) {
-    const noteName = midiNoteToName(rootNote);
-    const fifth = Tone.Frequency(noteName).transpose(7).toNote();
-    const third = Tone.Frequency(noteName).transpose(4).toNote();
-    const normalizedVelocity = velocity / 127;
-    chordSampler.triggerAttackRelease([noteName, third, fifth], "2n", undefined, normalizedVelocity);
+    let chord = generateChord(rootNote);
+  const chordNoteNames = chord.map(midiNoteToName);
+  const durationMs = (beatDuration / (2 * currentTimeSignature.subdivision));
+  const duration = durationMs / 1000;
+  const normalizedVelocity = velocity / 127;
+  
+  chord.forEach(note => {
+      lightUpNote(note, durationMs);
+  });
+    kotoSampler.triggerAttackRelease(chordNoteNames, "2n", undefined, normalizedVelocity);
+    chordSamplerC.triggerAttackRelease(chordNoteNames, "2n", undefined, normalizedVelocity);
 }
 
 function createDrumVariation(basePattern) {

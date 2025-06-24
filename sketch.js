@@ -1,7 +1,7 @@
 // === GLOBAL STATE AND INSTANCES ===
 
 // Audio
-let melodySampler, stringSampler, kotoSampler, chordSampler, drumSampler, hiHatSampler, tablaPlayers;
+let melodySampler, stringSampler, kotoSampler, chordSampler, chordSamplerC, drumSampler, hiHatSampler, tablaPlayers;
 let reverb, delay, lowPassFilter, hiHatDelay, hiHatReverb;
 let meter;
 let isPlaying = false;
@@ -68,7 +68,7 @@ function setup() {
   // Initialize Audio
   // Tone.setContext(getAudioContext());
 
-  reverb = new Tone.Reverb({ decay: 4, wet: 0.3 });
+  reverb = new Tone.Reverb({ decay: 4, wet: 0.7 });
   delay = new Tone.FeedbackDelay({ delayTime: "8n", feedback: 0.5, wet: 0.5 });
   hiHatDelay = new Tone.FeedbackDelay({ delayTime: "16n", feedback: 0.3, wet: 0 });
   hiHatReverb = new Tone.Reverb({ decay: 1.5, wet: 0 });
@@ -90,9 +90,10 @@ function setup() {
   }
 
   melodySampler = new Tone.Sampler(rhodesSamplesMap, { onload: onSamplerLoad, release: 1, baseUrl: "./" }).chain(lowPassFilter, delay, reverb, Tone.Destination);
-  stringSampler = new Tone.Sampler(stringSamplesMap, { onload: onSamplerLoad, release: 1, baseUrl: "./" }).chain(lowPassFilter, delay, reverb, Tone.Destination);
+  stringSampler = new Tone.Sampler(stringSamplesMap, { onload: onSamplerLoad, release: 4, baseUrl: "./" }).chain(lowPassFilter, delay, reverb, Tone.Destination);
   kotoSampler = new Tone.Sampler(samplesMap, { onload: onSamplerLoad, release: 1, baseUrl: "./" }).chain(lowPassFilter, delay, reverb, Tone.Destination);
-  chordSampler = new Tone.Sampler(celloSamplesMap, { onload: onSamplerLoad, release: 4, baseUrl: "./" }).chain(lowPassFilter, delay, reverb, Tone.Destination);
+  chordSampler = new Tone.Sampler(rhodesSamplesMap, { onload: onSamplerLoad, release: 4, baseUrl: "./" }).chain(lowPassFilter, delay, reverb, Tone.Destination);
+  chordSamplerC = new Tone.Sampler(celloSamplesMap, { onload: onSamplerLoad, release: 4, baseUrl: "./" }).chain(lowPassFilter, delay, reverb, Tone.Destination);
   drumSampler = new Tone.Sampler(drumSamples, { onload: onSamplerLoad, baseUrl: "./" }).toDestination();
   tablaPlayers = new Tone.Players(tablaSamples, { onload: onSamplerLoad, baseUrl: "./" }).toDestination();
   
@@ -100,13 +101,14 @@ function setup() {
   hiHatSampler = new Tone.Sampler(hiHatSamples, { baseUrl: "./" }).chain(hiHatDelay, hiHatReverb, Tone.Destination);
 
   // Set initial volumes
-  melodySampler.volume.value = -6;
+  melodySampler.volume.value = -3;
   stringSampler.volume.value = -6;
   kotoSampler.volume.value = -10;
-  chordSampler.volume.value = -10;
-  drumSampler.volume.value = -10;
+  chordSampler.volume.value = -14;
+  chordSamplerC.volume.value = -1;
+  drumSampler.volume.value = -16;
   hiHatSampler.volume.value = -14;
-  tablaPlayers.volume.value = -6;
+  tablaPlayers.volume.value = -2;
 
   // Setup UI listeners
   const modeToggleButton = document.getElementById('mode-toggle');
