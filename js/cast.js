@@ -45,15 +45,12 @@ function initializeCast() {
     try {
         const castContext = cast.framework.CastContext.getInstance();
         
-        // Set Cast options with fallback for development
-        let receiverAppId = 'CC1AD845'; // Default Media Receiver ID
+        // Use Styled Media Receiver which supports custom messages
+        let receiverAppId = '07AEE832'; // Styled Media Receiver supports custom messages
         let autoJoinPolicy = 'origin_scoped';
         
         // Try to use proper Chrome Cast constants if available
         if (typeof chrome !== 'undefined' && chrome.cast) {
-            if (chrome.cast.media && chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID) {
-                receiverAppId = chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID;
-            }
             if (chrome.cast.AutoJoinPolicy && chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED) {
                 autoJoinPolicy = chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED;
             }
@@ -198,32 +195,80 @@ function sendInitialState() {
     if (!isCasting || !currentCastSession) return;
     
     try {
-        // Send current raga
-        if (currentRaga) {
-            sendCustomMessage({
-                type: 'RAGA_CHANGE',
-                raga: currentRaga
-            });
-        }
-        
-        // Send current mode
-        sendCustomMessage({
-            type: 'MODE_CHANGE',
-            mode: currentMode
+        // Start with a simple media load, then send custom messages
+        loadBasicMedia().then(() => {
+            console.log('Basic media loaded, sending custom state...');
+            
+            // Wait a moment for receiver to initialize
+            setTimeout(() => {
+                // Send current raga
+                if (typeof currentRaga !== 'undefined' && currentRaga) {
+                    sendCustomMessage({
+                        type: 'RAGA_CHANGE',
+                        raga: currentRaga
+                    });
+                }
+                
+                // Send current mode
+                sendCustomMessage({
+                    type: 'MODE_CHANGE',
+                    mode: typeof currentMode !== 'undefined' ? currentMode : 'ambient'
+                });
+                
+                // Send playback state
+                sendCustomMessage({
+                    type: 'PLAYBACK_STATE',
+                    playing: typeof isPlaying !== 'undefined' ? isPlaying : false
+                });
+                
+                // Send initial visual/audio state
+                sendCurrentState();
+            }, 1000);
+            
+        }).catch(error => {
+            console.error('Error loading media:', error);
+            // Try sending messages anyway
+            setTimeout(() => {
+                sendCurrentState();
+            }, 2000);
         });
-        
-        // Send playback state
-        sendCustomMessage({
-            type: 'PLAYBACK_STATE',
-            playing: isPlaying
-        });
-        
-        // Send initial visual/audio state
-        sendCurrentState();
         
     } catch (error) {
         console.error('Error sending initial state:', error);
     }
+}
+
+function loadBasicMedia() {
+    return new Promise((resolve, reject) => {
+        try {
+            // Create a simple media load to initialize the receiver
+            const mediaUrl = `${window.location.origin}/receiver.html`;
+            console.log('Loading media from:', mediaUrl);
+            
+            // Create media info
+            const mediaInfo = new chrome.cast.media.MediaInfo(mediaUrl, 'text/html');
+            mediaInfo.metadata = new chrome.cast.media.GenericMediaMetadata();
+            mediaInfo.metadata.title = 'Raga.fm Experience';
+            mediaInfo.metadata.subtitle = 'Generative Indian Classical Music';
+            
+            const request = new chrome.cast.media.LoadRequest(mediaInfo);
+            
+            currentCastSession.loadMedia(request).then(
+                function() {
+                    console.log('Media loaded successfully');
+                    resolve();
+                },
+                function(error) {
+                    console.error('Error loading media:', error);
+                    reject(error);
+                }
+            );
+            
+        } catch (error) {
+            console.error('Error in loadBasicMedia:', error);
+            reject(error);
+        }
+    });
 }
 
 function sendCurrentState() {
@@ -280,15 +325,19 @@ function getGridState() {
 }
 
 function sendCustomMessage(message) {
-    if (!currentCastSession) return;
+    if (!currentCastSession) {
+        console.warn('No cast session available for sending message:', message);
+        return;
+    }
     
     try {
+        console.log('Sending custom message:', message.type, message);
         currentCastSession.sendMessage('urn:x-cast:raga-fm', message).then(
             function() {
-                // Message sent successfully
+                console.log('Custom message sent successfully:', message.type);
             },
             function(error) {
-                console.error('Error sending custom message:', error);
+                console.error('Error sending custom message:', message.type, error);
             }
         );
     } catch (error) {
