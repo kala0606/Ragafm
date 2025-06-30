@@ -93,7 +93,7 @@ float pattern( in vec2 p )
 
 // Edge detection function
 float getEdges(vec2 uv, float scale) {
-    float offset = 1.0 / min(iResolution.x, iResolution.y) * 2.0;
+    float offset = 1.0 / min(iResolution.x, iResolution.y) * 3.0;
     
     // Sample the pattern at the center and surrounding points
     float center = pattern(uv * scale);
@@ -110,7 +110,7 @@ float getEdges(vec2 uv, float scale) {
     float edge = length(vec2(dx, dy));
     
     // Apply threshold and sharpening
-    edge = smoothstep(0.01, 0.25, edge);
+    edge = smoothstep(0.05, 0.25, edge);
     edge = pow(edge, 2.0); // Make edges sharper
     
     return edge;
