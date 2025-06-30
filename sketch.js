@@ -154,7 +154,7 @@ function draw() {
     if (meter) {
         let level_dB = meter.getValue();
         currentAmplitude = map(level_dB, -48, 0, 0, 1, true);
-        shaderTime += currentAmplitude * 0.05;
+        shaderTime += currentAmplitude * 0.009;
     }
 
     if(currentRaga && backgroundShader) {
