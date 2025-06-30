@@ -59,7 +59,7 @@ mat2 getRotationMatrix(float time) {
 
 // Create a dynamic transformation matrix that varies over time
 mat2 getDynamicMatrix(float time) {
-    float angle = time * 0.5 + sin(time * 0.2) * 0.5; // Varying rotation speed
+    float angle = time * 2.0 + sin(time * 0.2) * 0.5; // Varying rotation speed
     float c = cos(angle);
     float s = sin(angle);
     float scale = 1.0 + sin(time * 0.15) * 0.1; // Slight scale variation
@@ -93,7 +93,7 @@ float pattern( in vec2 p )
 
 // Edge detection function
 float getEdges(vec2 uv, float scale) {
-    float offset = 1.0 / min(iResolution.x, iResolution.y) * 3.0;
+    float offset = 1.0 / min(iResolution.x, iResolution.y) * 2.0;
     
     // Sample the pattern at the center and surrounding points
     float center = pattern(uv * scale);
@@ -119,16 +119,24 @@ float getEdges(vec2 uv, float scale) {
 void main() {
     // --- Background Pattern ---
     vec2 pattern_uv = vTexCoord;
-    pattern_uv.x *= iResolution.x / iResolution.y; // Keep aspect ratio correct
     
-    // Add overall rotation to the pattern coordinates
+    // Center the coordinates around (0, 0) for proper rotation
+    vec2 centered_uv = pattern_uv - 0.5;
+    
+    // Apply aspect ratio correction after centering
+    centered_uv.x *= iResolution.x / iResolution.y;
+    
+    // Add overall rotation to the centered coordinates
     mat2 globalRotation = getRotationMatrix(iTime * 0.05);
-    pattern_uv = globalRotation * (pattern_uv - 0.5) + 0.5;
+    centered_uv = globalRotation * centered_uv;
+    
+    // Move back to UV space and apply pattern scale
+    pattern_uv = centered_uv + 0.5;
     
 	float shade = pattern(pattern_uv * 3.0);
     vec4 backgroundColor = vec4(colormap(shade).rgb, 1.0);
     
-    // Calculate edges
+    // Calculate edges using the same transformed coordinates
     float edges = getEdges(pattern_uv, 3.0);
     
     // Mix background with white edges
