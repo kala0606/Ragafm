@@ -110,6 +110,31 @@ float pattern( in vec2 p )
 	return fbm( p + fbm( p + fbm( p ) ) );
 }
 
+// Edge detection function
+float getEdges(vec2 uv, float scale) {
+    float offset = 1.0 / min(iResolution.x, iResolution.y) * 2.0;
+    
+    // Sample the pattern at the center and surrounding points
+    float center = pattern(uv * scale);
+    float left = pattern((uv + vec2(-offset, 0.0)) * scale);
+    float right = pattern((uv + vec2(offset, 0.0)) * scale);
+    float up = pattern((uv + vec2(0.0, -offset)) * scale);
+    float down = pattern((uv + vec2(0.0, offset)) * scale);
+    
+    // Calculate gradients
+    float dx = right - left;
+    float dy = down - up;
+    
+    // Calculate edge strength
+    float edge = length(vec2(dx, dy));
+    
+    // Apply threshold and sharpening
+    edge = smoothstep(0.05, 0.25, edge);
+    edge = pow(edge, 2.0); // Make edges sharper
+    
+    return edge;
+}
+
 void main() {
     // --- Background Pattern ---
     vec2 pattern_uv = vTexCoord;
@@ -129,8 +154,14 @@ void main() {
     
 	float shade = pattern(pattern_uv * 3.0);
     vec4 backgroundColor = vec4(colormap(shade).rgb, 1.0);
+    
+    // Calculate edges using the same transformed coordinates
+    float edges = getEdges(pattern_uv, 3.0);
+    
+    // Mix background with white edges
+    vec3 finalColor = mix(backgroundColor.rgb, vec3(1.0), edges);
 
     // The text is now rendered in a separate pass in p5.js,
     // so we only need to output the background color here.
-    gl_FragColor = backgroundColor;
+    gl_FragColor = vec4(finalColor, 1.0);
 } 
