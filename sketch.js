@@ -166,6 +166,7 @@ function draw() {
         
         backgroundShader.setUniform('iResolution', [width, height]);
         backgroundShader.setUniform('iTime', shaderTime);
+        backgroundShader.setUniform('u_amplitude', currentAmplitude);
         
         const scheme = currentRaga.colorScheme;
         let c;
